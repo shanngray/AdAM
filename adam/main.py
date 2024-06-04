@@ -1,6 +1,7 @@
 import sys
 import os
 from dotenv import load_dotenv
+from langchain_core.messages import HumanMessage
 
 load_dotenv(".env")
 
@@ -10,10 +11,9 @@ sys.path.insert(1, PROJECT_DIRECTORY)
 
 from build_graph import metaflow
 
-
 def main():
 
-    inputs = {"messages": [HumanMessage(content="hello?"", name="human")]}
+    inputs = {"messages": [HumanMessage(content="hello?", name="human")]}
 
     graph = metaflow.compile()
 

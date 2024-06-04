@@ -1,1 +1,13 @@
 .env
+.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints
+*.log
+*.tmp
+*.temp
+.DS_Store
+.pytest_cache/
+AdAM.code-workspace
+.vscode/
+

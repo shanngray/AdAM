@@ -49,7 +49,7 @@ metaflow.add_node("meta_node_supervisor", meta_node_supervisor)
 # and the third is a dictionary of nodes to use as the destination. The keys in the dictionary are the
 # possible output strings from the edge function, and the values are the names of the nodes that the edge will go to.
 # The flow branches after the analyser node. The analyser_edge function determines which branch (or edge) will be taken.
-metaflow.add_conditional_edges("analyser_node", analyser_edge, {"engineer_node": "engineer_node", "subject_node": "subject_node"})
+metaflow.add_conditional_edges("analyser_node", analyser_edge, {"Try Again": "engineer_node", "Proceed": "subject_node"})
 # The flow branches after the analyser node. The analyser_edge function determines which branch (or edge) will be taken.
 metaflow.add_conditional_edges("meta_node_supervisor", supervisor_edge, {"meta_node_one": "meta_node_one", "final_response": END})
 

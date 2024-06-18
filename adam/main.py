@@ -13,15 +13,21 @@ from build_graph import metaflow
 
 def main():
 
-    inputs = {"messages": [HumanMessage(content="hello?", name="human")]}
+    init_prompt = input("Hello, how can I help you today? \n")
+    inputs = {"messages": [HumanMessage(content=init_prompt, name="human")]}
 
     graph = metaflow.compile()
 
     for output in graph.stream(inputs):
-        for state in output.items():
-            # Check if the node's state contains messages
-            
-            print("XXX")  # Print a separator after each conversation turn
+        for node, state in output.items():
+            print(f"<NODE: {node}>\n")
+            if 'messages' in state:
+                print(f"{state['messages'][-1].name}: \"{state['messages'][-1].content}\"\n")
+            else:
+                print("No messages found in state.\n")
+            print("<END INNER LOOP>\n")  # Print a separator after each conversation turn
+        print("<END OUTER LOOP>\n")
+
 
 if __name__ == '__main__':
     main()

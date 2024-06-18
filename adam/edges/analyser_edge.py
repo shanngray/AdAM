@@ -1,10 +1,6 @@
 def analyser_edge(state):
     
-    response = "Proceed"
+    decision = state["analyser_decision"]
 
-    if response == "Proceed":
-        return "subject_node"
-    else:
-        return "engineer_node"
+    return decision
         
-

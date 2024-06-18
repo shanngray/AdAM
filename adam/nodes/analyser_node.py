@@ -26,7 +26,7 @@ def analyser_node(state):
     analyser_chain = analyser(state)
 
     #not sure if human response needs []
-    analyser_response = analyser_chain.invoke({"messages": [human_response]})
+    analyser_response = analyser_chain.invoke({"human_response": [human_response]})
     
     analyser_decision = analyser_response.next_action
     print(f"analyser: {analyser_decision}\n")

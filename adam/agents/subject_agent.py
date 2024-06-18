@@ -1,4 +1,4 @@
-"""Agent that rewrites user story prompts"""
+"""Agent that assigns a subject to the rewritten prompt"""
 
 
 from langchain_core.output_parsers import StrOutputParser
@@ -6,21 +6,21 @@ from langchain_cohere import ChatCohere
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage
 
-def engineer(state: dict):
+def subject_agent(state: dict):
     system_prompt = (
         "# ROLE:\nYou are an expert prompt engineer. \n\n"
-        "# TASK:\nRewrite the provided user prompt into clear and concise instructions for "
-        "an LLM to follow using Prompt Enginnering best practices. The instructions should be in a "
-        "step-by-step format. Make sure to include all details from the original prompt and "
-        "importantly don't make anything up.\n\n"
+        "# TASK:\nAnalyse the prompt and determine the subject matter.\n\n"
         "# EXAMPLE:\n"
-        "## Input: I need help writing a user story for creating and modifying process maps.\n"
-        "## Output: Compose a user story for a software feature that allows users to design, "
+        "## Input:\nCompose a user story for a software feature that allows users to design, "
         "update, and save process maps, including the ability to add, remove, or modify process "
         "steps and flow directions.\n\n"
+        "## Output:\nProcess Maps\n\n"
         "# NOTES:\n"
-        " - The goal is not to answer the user's prompt but to provide clear instructions in the form "
-        "of an LLM prompt."
+        " - The goal is not to answer the user's prompt but to provide a concise subject matter "
+        "for the prompt."
+        "# PROMPT:\n"
+        "## Input:\n{rewritten_prompt}\n\n"
+        "## Output:\n"
     )
     llm = ChatCohere(model="command-r-plus", temperature=0.2)
     
@@ -32,18 +32,10 @@ def engineer(state: dict):
     # of the message (i.e. "system" or "user"), and the second element is the content of the message.
     # As the name suggests, MessagesPlaceholder allows us to create a placeholder for the messages that 
     # make up the conversational history.
-    engineer_prompt = ChatPromptTemplate.from_messages(
-        [
-            (
-                "system",
-                system_prompt,
-            ),
-            MessagesPlaceholder(variable_name="messages"),
-        ]
-    )
+    subject_prompt = ChatPromptTemplate.from_messages([("system", system_prompt)])
 
     output_parser = StrOutputParser()
  
-    engineer_chain = engineer_prompt | llm | output_parser
+    subject_chain = subject_prompt | llm | output_parser
 
-    return engineer_chain
+    return subject_chain

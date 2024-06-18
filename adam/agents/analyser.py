@@ -35,13 +35,15 @@ def analyser(state):
     )
 
     # Initialize the language model with zero randomness for consistent outputs
-    llm = ChatCohere(model="command-r", temperature=0)
+    llm = ChatCohere(model="command-r-plus", temperature=0)
 
-    
+    # Structure the LLM's response using the AnalyserResponse model
     structured_llm = llm.with_structured_output(AnalyserResponse, preamble=analyser_preamble)
 
+    # Here we are creating a ChatPromptTemplate that only has one message in it. This message is a placeholder
+    # for the human's response that needs to be analysed.
     analyser_prompt = ChatPromptTemplate.from_messages(
-        [("human", "Response that needs to be analysed: {messages}")]
+        [("human", "Response that needs to be analysed: {human_response}")]
     )
 
     analyser_chain = analyser_prompt | structured_llm  # Chain the prompt template with the structured language model

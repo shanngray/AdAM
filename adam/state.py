@@ -24,5 +24,5 @@ class State(TypedDict):
     """
     messages: Annotated[list[AnyMessage], add_messages]
     subject: str
-    prompt: str
+    rewritten_prompt: str
     analyser_decision: str

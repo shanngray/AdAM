@@ -2,6 +2,7 @@
 
 ![AdAM Node Map](./AdAM%20Node%20Map.png)
 
+
 This still needs a lot of work but here is the basic gist of the project...
 
 1) To start the prompt gets re-written using prompt engineering. This prompt then get sent back to the human for them to tweak or agree with (this step is to emulate "active listening" where the agent rephrases the request and the human can let them know if they are on the right track. 2) The feedback then gets analysed to determine whether to proceed (feedback is simple affirmation) or if the human says pretty much anything else it will go back for review and to rewrite the prompt again.

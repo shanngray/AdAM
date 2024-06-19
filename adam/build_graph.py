@@ -51,7 +51,7 @@ metaflow.add_node("meta_node_supervisor", meta_node_supervisor)
 # The flow branches after the analyser node. The analyser_edge function determines which branch (or edge) will be taken.
 metaflow.add_conditional_edges("analyser_node", analyser_edge, {"Try Again": "engineer_node", "Proceed": "subject_node"})
 # The flow branches after the analyser node. The analyser_edge function determines which branch (or edge) will be taken.
-metaflow.add_conditional_edges("meta_node_supervisor", supervisor_edge, {"meta_node_one": "meta_node_one", "final_response": END})
+metaflow.add_conditional_edges("meta_node_supervisor", supervisor_edge, {"Continue": "meta_node_one", "Stop": END})
 
 # Standard edges. These are used where the flow always takes the same path between nodes/agents.
 # The source node is always on the left and the destination node is always on the right.

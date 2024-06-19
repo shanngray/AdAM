@@ -6,14 +6,28 @@ from langchain_cohere import ChatCohere
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage
 
-def agent_builder(state: dict):
-    system_prompt = (
-        "# ROLE:\nYou are an LLM and Generative AI expert specialised in writing system prompts. \n\n"
-        "# TASK:\nWrite the system prompt for an agent that is a subject matter expert in {subject}.\n\n"
-        "# NOTES:\n"
-        " - The system prompt should use advanced prompt engineering techniques.."
-        " - The *task* will be passed to the Agent as a separate variable."
-    )
+def agent_builder(state: dict, agent_type: str):
+    
+    if agent_type == "one":
+        system_prompt = (
+            "# ROLE:\nYou are an LLM and Generative AI expert specialises in writing system prompts. \n\n"
+            "# TASK:\nWrite the system prompt for an agent that is a subject matter expert in {subject}.\n\n"
+            "# NOTES:\n"
+            " - The system prompt should use advanced prompt engineering techniques."
+            " - The *task* will be passed to the Agent as a separate variable."
+        )
+    elif agent_type == "two":
+        system_prompt = (
+            "# ROLE:\nYou are an LLM and Generative AI expert specialises in writing system prompts. \n\n"
+            "# TASK:\nWrite the system prompt for an agent that is a subject matter expert in {subject}.\n\n"
+            "# NOTES:\n"
+            " - The system prompt should use advanced prompt engineering techniques.\n"
+            " - The agent will reflect upon a previous agent's work and critique how "
+            " well they have done. The agent will then suggest improvements to their work."
+        )
+    else:
+        raise ValueError(f"Invalid agent type: {agent_type}")
+
     llm = ChatCohere(model="command-r-plus", temperature=0.2)
     
     # The ChatPromptTemplate class in LangChain is used to create and format prompts for 

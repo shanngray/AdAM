@@ -1,9 +1,5 @@
 def supervisor_edge(state):
     
-    response = "final_response"
+    meta_supervisor_decision = state["meta_supervisor_decision"]
 
-    if response == "final_response":
-        return "final_response"
-    else:
-        return "meta_node_one"
-        
+    return meta_supervisor_decision        

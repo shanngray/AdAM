@@ -23,10 +23,13 @@ def builder_node(state):
 
     subject = state["subject"]
 
-    builder_chain = agent_builder(state)
+    builder_chain_one = agent_builder(state, "one")
+    builder_chain_two = agent_builder(state, "two")
 
-    #not sure if human response needs []
-    meta_prompt = builder_chain.invoke({"subject": [subject]})
-    
-    print(f"meta prompt: {meta_prompt}\n")
-    return {"meta_prompt": meta_prompt}
+    meta_prompt_one = builder_chain_one.invoke({"subject": [subject]})
+    meta_prompt_two = builder_chain_two.invoke({"subject": [subject]})
+
+    print(f"meta prompt: {meta_prompt_one}\n")
+    print(f"meta prompt: {meta_prompt_two}\n")
+
+    return {"meta_prompt_one": meta_prompt_one, "meta_prompt_two": meta_prompt_two}

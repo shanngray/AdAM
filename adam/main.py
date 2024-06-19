@@ -25,11 +25,12 @@ def main():
             print(f"<NODE: {node}>\n")
             if 'messages' in state:
                 print(f"{state['messages'][-1].name}: \"{state['messages'][-1].content}\"\n")
+            elif 'meta_messages' in state:
+                print(f"{state['meta_messages'][-1].name}: \"{state['meta_messages'][-1].content}\"\n")
             else:
                 print("No messages found in state.\n")
             print("<END INNER LOOP>\n")  # Print a separator after each conversation turn
         print("<END OUTER LOOP>\n")
-
 
 if __name__ == '__main__':
     main()

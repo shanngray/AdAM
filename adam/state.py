@@ -23,7 +23,10 @@ class State(TypedDict):
         prompt (str): The initial or current prompt used to guide the conversation or interaction.
     """
     messages: Annotated[list[AnyMessage], add_messages]
+    meta_messages: Annotated[list[AnyMessage], add_messages]
     subject: str
     rewritten_prompt: str
     analyser_decision: str
-    meta_prompt: str
+    meta_prompt_one: str
+    meta_prompt_two: str
+    meta_supervisor_decision: str

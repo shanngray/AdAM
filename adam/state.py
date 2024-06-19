@@ -22,11 +22,11 @@ class State(TypedDict):
         subject (str): The subject or main topic of the current state or conversation.
         prompt (str): The initial or current prompt used to guide the conversation or interaction.
     """
-    messages: Annotated[list[AnyMessage], add_messages]
-    meta_messages: Annotated[list[AnyMessage], add_messages]
-    subject: str
-    rewritten_prompt: str
-    analyser_decision: str
-    meta_prompt_one: str
-    meta_prompt_two: str
-    meta_supervisor_decision: str
+    messages: Annotated[list[AnyMessage], add_messages] # List of messages for constructor agents
+    meta_messages: Annotated[list[AnyMessage], add_messages] # List of messages for meta-agents
+    subject: str # Subject of the conversation
+    rewritten_prompt: str # Rewritten prompt using prompt engineering techniques
+    analyser_decision: str # Decision of the analyser agent
+    meta_prompt_one: str # System prompt for meta_one
+    meta_prompt_two: str # System prompt for meta_two
+    meta_supervisor_decision: str # Decision of the meta_supervisor agent

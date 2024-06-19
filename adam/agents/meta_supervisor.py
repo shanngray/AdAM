@@ -29,8 +29,8 @@ def meta_supervisor(state):
     meta_supervisor_preamble = (
         "You are the Supervisor for a team of two agents that are experts in {subject}. Your job is to decide whether to keep iterating "
         " on the prompt or to stop. You are to only ever respond with 'Stop' or 'Continue': \n"
-        " - 'Stop': The response is satisfactory and answers the human's query in a truthful manner. \n"
-        " - 'Continue': The response is not satisfactory and requires further improvement. \n"
+        " - 'Stop': The feedback is complete and the response is satisfactory and answers the human's query in a truthful manner. \n"
+        " - 'Continue': The response is not satisfactory and/or there is feedback that needs to be included. \n"
     )
 
     # Initialize the language model with zero randomness for consistent outputs

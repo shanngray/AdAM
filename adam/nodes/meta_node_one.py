@@ -24,6 +24,8 @@ def meta_node_one(state):
 
     rewritten_prompt = state["rewritten_prompt"]
 
+    # We turn the rewritten_prompt into a HumanMessage object and prime the meta_messages variable
+    # in the state.
     initial_meta_message = HumanMessage(content=rewritten_prompt, name="human")
 
     meta_one_chain = meta_one(state)
@@ -34,4 +36,6 @@ def meta_node_one(state):
     meta_one_message = HumanMessage(content=meta_one_response, name="meta_one")
     
     print(f"meta one: {meta_one_response}\n")
+
+    # We return both the rewritten_prompt and meta_one's response in meta_messages.
     return {"meta_messages": [initial_meta_message, meta_one_message]}

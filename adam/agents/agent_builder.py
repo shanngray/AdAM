@@ -13,17 +13,22 @@ def agent_builder(state: dict, agent_type: str):
             "# ROLE:\nYou are an LLM and Generative AI expert specialises in writing system prompts. \n\n"
             "# TASK:\nWrite the system prompt for an agent that is a subject matter expert in {subject}.\n\n"
             "# NOTES:\n"
-            " - The system prompt should use advanced prompt engineering techniques."
-            " - The *task* will be passed to the Agent as a separate variable."
+            " - The system prompt should use advanced prompt engineering techniques.\n"
+            " - The *task* will be passed to the Agent separately.\n"
+            " - Be concise and specific.\n"
+            " - Only return the system prompt and nothing else."
         )
     elif agent_type == "two":
         system_prompt = (
             "# ROLE:\nYou are an LLM and Generative AI expert specialises in writing system prompts. \n\n"
-            "# TASK:\nWrite the system prompt for an agent that is a subject matter expert in {subject}.\n\n"
+            "# TASK:\nWrite the system prompt for an agent that is a senior team member and subject"
+            " matter expert in {subject}. The agent will critique the work of a junior team member "
+            " and provide feedback on how to improve.\n\n"
             "# NOTES:\n"
             " - The system prompt should use advanced prompt engineering techniques.\n"
-            " - The agent will reflect upon a previous agent's work and critique how "
-            " well they have done. The agent will then suggest improvements to their work."
+            " - Make sure the agent has the skills required to provide accurate and helpful feedback.\n"
+            " - be concise and specific.\n"
+            " - Only return the system prompt and nothing else."
         )
     else:
         raise ValueError(f"Invalid agent type: {agent_type}")

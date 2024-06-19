@@ -7,9 +7,15 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage
 
 def meta_two(state: dict):
-    system_prompt = state["meta_prompt_two"]
+    prompt_seed = state["meta_prompt_two"]
 
-    llm = ChatCohere(model="command-r-plus", temperature=0.2)
+    system_prompt = prompt_seed + "\n# NOTES:\n"
+    system_prompt += " - Be concise and specific.\n"
+    system_prompt += " - Be methodical. Explain your feedback step by step.\n"
+    system_prompt += " - Only return the feedback and nothing else.\n"
+    system_prompt += " - If the work is of good quality, return: COMPLETE.\n"
+
+    llm = ChatCohere(model="command-r-plus", temperature=0.1)
     
     # The ChatPromptTemplate class in LangChain is used to create and format prompts for 
     # conversational models. It provides a structured way to define the messages that will be sent

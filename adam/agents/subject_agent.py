@@ -16,8 +16,10 @@ def subject_agent(state: dict):
         "steps and flow directions.\n\n"
         "## Output:\nProcess Maps\n\n"
         "# NOTES:\n"
-        " - The goal is not to answer the user's prompt but to provide a concise subject matter "
-        "for the prompt."
+        " - The goal is not to answer the user's prompt but to explain the subject matter "
+        "of the prompt.\n"
+        " - be concise and specific.\n"
+        " - Only return the subject matter and notting else.\n\n"
         "# PROMPT:\n"
         "## Input:\n{rewritten_prompt}\n\n"
         "## Output:\n"
@@ -39,4 +41,3 @@ def subject_agent(state: dict):
     subject_chain = subject_prompt | llm | output_parser
 
     return subject_chain
-    

@@ -7,7 +7,11 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage
 
 def meta_one(state: dict):
-    system_prompt = state["meta_prompt_one"]
+    prompt_seed = state["meta_prompt_one"]
+
+    system_prompt = prompt_seed + "\n# NOTES:\n"
+    system_prompt += " - Be concise and specific.\n"
+    system_prompt += " - Be methodical. Explain your reasoning step by step.\n"
 
     llm = ChatCohere(model="command-r-plus", temperature=0.2)
     
@@ -28,7 +32,7 @@ def meta_one(state: dict):
             MessagesPlaceholder(variable_name="messages"),
         ]
     )
-    
+
     output_parser = StrOutputParser()
  
     meta_one_chain = meta_one_prompt | llm | output_parser

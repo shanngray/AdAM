@@ -28,7 +28,7 @@ def meta_node_supervisor(state):
 
     #not sure if human response needs []
     meta_supervisor_response = meta_supervisor_chain.invoke({"meta_messages": meta_messages, "subject": [subject]})
-    
+    print(f"meta supervisor: {meta_supervisor_response}\n")    
     meta_supervisor_decision = meta_supervisor_response.next_action
     print(f"meta supervisor: {meta_supervisor_decision}\n")
     return {"meta_supervisor_decision": meta_supervisor_decision}

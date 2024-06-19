@@ -26,3 +26,4 @@ class State(TypedDict):
     subject: str
     rewritten_prompt: str
     analyser_decision: str
+    meta_prompt: str

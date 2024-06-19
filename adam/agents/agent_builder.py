@@ -1,4 +1,4 @@
-"""Agent that assigns a subject to the rewritten prompt"""
+"""Agent that builds the meta agents"""
 
 
 from langchain_core.output_parsers import StrOutputParser
@@ -6,21 +6,13 @@ from langchain_cohere import ChatCohere
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage
 
-def subject_agent(state: dict):
+def agent_builder(state: dict):
     system_prompt = (
-        "# ROLE:\nYou are an expert prompt engineer. \n\n"
-        "# TASK:\nAnalyse the prompt and determine the subject matter.\n\n"
-        "# EXAMPLE:\n"
-        "## Input:\nCompose a user story for a software feature that allows users to design, "
-        "update, and save process maps, including the ability to add, remove, or modify process "
-        "steps and flow directions.\n\n"
-        "## Output:\nProcess Maps\n\n"
+        "# ROLE:\nYou are an LLM and Generative AI expert specialised in writing system prompts. \n\n"
+        "# TASK:\nWrite the system prompt for an agent that is a subject matter expert in {subject}.\n\n"
         "# NOTES:\n"
-        " - The goal is not to answer the user's prompt but to provide a concise subject matter "
-        "for the prompt."
-        "# PROMPT:\n"
-        "## Input:\n{rewritten_prompt}\n\n"
-        "## Output:\n"
+        " - The system prompt should use advanced prompt engineering techniques.."
+        " - The *task* will be passed to the Agent as a separate variable."
     )
     llm = ChatCohere(model="command-r-plus", temperature=0.2)
     
@@ -32,11 +24,11 @@ def subject_agent(state: dict):
     # of the message (i.e. "system" or "user"), and the second element is the content of the message.
     # As the name suggests, MessagesPlaceholder allows us to create a placeholder for the messages that 
     # make up the conversational history.
-    subject_prompt = ChatPromptTemplate.from_messages([("system", system_prompt)])
+    builder_prompt = ChatPromptTemplate.from_messages([("system", system_prompt)])
 
     output_parser = StrOutputParser()
  
-    subject_chain = subject_prompt | llm | output_parser
+    builder_chain = builder_prompt | llm | output_parser
 
-    return subject_chain
+    return builder_chain
     

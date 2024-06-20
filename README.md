@@ -1,5 +1,6 @@
 # Ad.A.M - Adaptive Agent Multiplex
-
+![AdAM Cover Imaghe](./ADAM.jpg)
+## Node Map
 ![AdAM Node Map](./AdAM%20Node%20Map.png)
 
 

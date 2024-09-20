@@ -21,3 +21,12 @@ Screenshot 2024-06-15 at 11.26.59 AM.png
 Screenshot 2024-06-15 at 11.27.34 AM.png
 Screenshot 2024-06-15 at 11.27.58 AM.png
 Screenshot 2024-06-15 at 11.29.33 AM.png
+.cursorrules_old
+.cursorrules_small
+adam/server 2.py
+adam/server 3.py
+.gitignore
+adam/utilities/load_db.py
+adam/utilities/print_db.py
+adam/prompts
+

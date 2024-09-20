@@ -15,21 +15,29 @@ PROJECT_DIRECTORY = os.getenv("PROJECT_DIRECTORY")
 sys.path.insert(1, PROJECT_DIRECTORY)
 
 from agents.agent_builder import agent_builder
+from agents.planner import planner
 
-def builder_node(state):
+async def builder_node(state):
     """
     """
     print("###Builder Node###\n")
 
     subject = state["subject"]
+    rewritten_prompt = state["rewritten_prompt"]
 
-    builder_chain_one = agent_builder(state, "one")
-    builder_chain_two = agent_builder(state, "two")
+    builder_chain_one = await agent_builder(state, "one")
+    builder_chain_two = await agent_builder(state, "two")
+    planner_chain = await planner(state)
 
     meta_prompt_one = builder_chain_one.invoke({"subject": [subject]})
+    print(f"meta prompt one: {meta_prompt_one}\n")
+
     meta_prompt_two = builder_chain_two.invoke({"subject": [subject]})
+    print(f"meta prompt two: {meta_prompt_two}\n")
+    
+    plan = planner_chain.invoke({"rewritten_prompt": [rewritten_prompt]})
+    print(f"plan: {plan}\n")
+    
+    complexity = plan.complexity
 
-    print(f"meta prompt: {meta_prompt_one}\n")
-    print(f"meta prompt: {meta_prompt_two}\n")
-
-    return {"meta_prompt_one": meta_prompt_one, "meta_prompt_two": meta_prompt_two}
+    return {"meta_prompt_one": meta_prompt_one, "meta_prompt_two": meta_prompt_two, "plan": complexity, "subject": subject}

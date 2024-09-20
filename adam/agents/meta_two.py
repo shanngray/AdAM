@@ -6,7 +6,7 @@ from langchain_cohere import ChatCohere
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage
 
-def meta_two(state: dict):
+async def meta_two(state: dict):
     prompt_seed = state["meta_prompt_two"]
 
     system_prompt = prompt_seed + "\n# NOTES:\n"

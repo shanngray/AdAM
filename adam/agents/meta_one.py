@@ -6,8 +6,10 @@ from langchain_cohere import ChatCohere
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage
 
-def meta_one(state: dict):
+async def meta_one(state: dict):
     prompt_seed = state["meta_prompt_one"]
+
+    print(f"prompt seed: {prompt_seed}\n")
 
     system_prompt = prompt_seed + "\n# NOTES:\n"
     system_prompt += " - Be concise and specific.\n"

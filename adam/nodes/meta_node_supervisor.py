@@ -16,15 +16,15 @@ sys.path.insert(1, PROJECT_DIRECTORY)
 
 from agents.meta_supervisor import meta_supervisor
 
-def meta_node_supervisor(state):
+async def meta_node_supervisor(meta_state):
     """
     """
     print("###Meta Supervisor Node###\n")
 
-    meta_messages = state["meta_messages"]
-    subject = state["subject"]
+    meta_messages = meta_state["meta_messages"]
+    subject = meta_state["subject"]
 
-    meta_supervisor_chain = meta_supervisor(state)
+    meta_supervisor_chain = await meta_supervisor(meta_state)
 
     #not sure if human response needs []
     meta_supervisor_response = meta_supervisor_chain.invoke({"meta_messages": meta_messages, "subject": [subject]})

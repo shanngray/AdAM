@@ -21,7 +21,7 @@ class MetaSupervisorResponse(BaseModel):
     """Data model for analysing the meta conversation."""
     next_action: str = Field(description="The next action to be taken: 'Stop' or 'Continue'")
 
-def meta_supervisor(state):
+async def meta_supervisor(state):
     """
     Meta Supervisor
     """

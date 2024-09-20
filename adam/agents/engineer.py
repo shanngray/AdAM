@@ -6,7 +6,7 @@ from langchain_cohere import ChatCohere
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage
 
-def engineer(state: dict):
+async def engineer(state: dict):
     system_prompt = (
         "# ROLE:\nYou are an expert prompt engineer. \n\n"
         "# TASK:\nRewrite the provided user prompt into clear and concise instructions for "

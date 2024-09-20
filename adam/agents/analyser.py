@@ -26,7 +26,7 @@ class AnalyserResponse(BaseModel):
     # response: str = Field(description="The human's response to the re-engineered prompt.")
     next_action: str = Field(description="The next action to be taken: 'Proceed' or 'Try Again'")
 
-def analyser(state):
+async def analyser(state):
 
     analyser_preamble = (
         "You are an analyst that assesses the user's response to the re-engineered prompt and assigns it to one of the following values: \n"

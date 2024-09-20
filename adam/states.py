@@ -6,8 +6,9 @@ enabling AI agents to effectively collaborate and maintain context throughout in
 from typing import TypedDict, Annotated
 from langchain_core.messages import AnyMessage
 from langgraph.graph.message import add_messages
+from fastapi import WebSocket
 
-class State(TypedDict):
+class Constructor_State(TypedDict):
     """
     Defines a protocol of how data is passed from one node (i.e. agent) to the next. The messages attribute is a list
     of responses from the AI agents and human. By passing the full conversational history from one agent to the next, the
@@ -23,10 +24,24 @@ class State(TypedDict):
         prompt (str): The initial or current prompt used to guide the conversation or interaction.
     """
     messages: Annotated[list[AnyMessage], add_messages] # List of messages for constructor agents
-    meta_messages: Annotated[list[AnyMessage], add_messages] # List of messages for meta-agents
     subject: str # Subject of the conversation
     rewritten_prompt: str # Rewritten prompt using prompt engineering techniques
     analyser_decision: str # Decision of the analyser agent
     meta_prompt_one: str # System prompt for meta_one
     meta_prompt_two: str # System prompt for meta_two
+    plan: str # Plan for the meta-agents
+    websocket: WebSocket # WebSocket connection for the client
+
+
+class Meta_State(TypedDict):
+    """
+    Defines a protocol of how data is passed from one node (i.e. agent) to the next. The messages attribute is a list
+    of responses from the AI agents and human. By passing the full conversational history from one agent to the next, the
+    agents can work as a team when solving problems.
+    """
+    meta_messages: Annotated[list[AnyMessage], add_messages] # List of messages for meta-agents
+    plan: str # Plan for the meta-agents
+    meta_prompt_one: str # System prompt for meta_one
+    meta_prompt_two: str # System prompt for meta_two
     meta_supervisor_decision: str # Decision of the meta_supervisor agent
+    subject: str # Subject of the conversation

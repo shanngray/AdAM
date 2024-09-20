@@ -6,7 +6,7 @@ from langchain_cohere import ChatCohere
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage
 
-def subject_agent(state: dict):
+async def subject_agent(state: dict):
     system_prompt = (
         "# ROLE:\nYou are an expert prompt engineer. \n\n"
         "# TASK:\nAnalyse the prompt and determine the subject matter.\n\n"

@@ -6,7 +6,7 @@ from langchain_cohere import ChatCohere
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage
 
-def agent_builder(state: dict, agent_type: str):
+async def agent_builder(state: dict, agent_type: str):
     
     if agent_type == "one":
         system_prompt = (

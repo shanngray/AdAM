@@ -16,14 +16,14 @@ sys.path.insert(1, PROJECT_DIRECTORY)
 
 from agents.analyser import analyser
 
-def analyser_node(state):
+async def analyser_node(state):
     """
     """
     print("###Analyser Node###\n")
 
     human_response = state["messages"][-1]
 
-    analyser_chain = analyser(state)
+    analyser_chain = await analyser(state)
 
     #not sure if human response needs []
     analyser_response = analyser_chain.invoke({"human_response": [human_response]})

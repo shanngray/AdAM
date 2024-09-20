@@ -16,14 +16,14 @@ sys.path.insert(1, PROJECT_DIRECTORY)
 
 from agents.subject_agent import subject_agent
 
-def subject_node(state):
+async def subject_node(state):
     """
     """
     print("###Subject Node###\n")
 
     rewritten_prompt = state["rewritten_prompt"]
 
-    subject_chain = subject_agent(state)
+    subject_chain = await subject_agent(state)
 
     #not sure if human response needs []
     subject_response = subject_chain.invoke({"rewritten_prompt": [rewritten_prompt]})

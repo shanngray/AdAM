@@ -20,3 +20,40 @@ This still needs a lot of work but here is the basic gist of the project...
 7) Once they are happy the response gets fed back to the human.
 
 
+## Installation
+Install poetry 
+```angular2html
+pip install poetry@1.8.2
+```
+
+```bash
+# Fix the lock file (optionally fix)
+poetry lock --no-update
+```
+```bash
+# Install all the py packages via poetry
+poetry install
+```
+If you are not inside a virtual env i.e.
+```bash
+poetry shell
+```
+
+Copy the `.env.example` and relabel it to `.env`.
+To speed through and get something working, use the following settings instead.
+```env
+LANGCHAIN_TRACING_V2="false"
+LANGCHAIN_API_KEY="" # Not needed 
+LANGCHAIN_TRACING_V2 = "false"
+LANGCHAIN_PROJECT = "AdAM"
+COHERE_API_KEY = "<REQUIRED>" 
+PROJECT_DIRECTORY = "AdAM/adam"
+DEBUG="True"
+```
+
+Run this on the root directory (so at /AdAM directory)
+```bash
+poetry run py adam/main.py
+Hello, how can I help you today?
+
+```

@@ -30,3 +30,7 @@ adam/utilities/load_db.py
 adam/utilities/print_db.py
 adam/prompts
 
+web-client/.next/
+web-client/node_modules/
+web-client/next-env.d.ts
+

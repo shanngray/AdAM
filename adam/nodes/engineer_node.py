@@ -7,18 +7,19 @@ import os
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
-load_dotenv(".env")
+load_dotenv()
+
 
 # Retrieve the project directory path from environment variables
-PROJECT_DIRECTORY = os.getenv("PROJECT_DIRECTORY")
+#PROJECT_DIRECTORY = os.getenv("PROJECT_DIRECTORY")
 
 # Insert the project directory into the system path for module resolution
-sys.path.insert(1, PROJECT_DIRECTORY)
+#sys.path.insert(1, PROJECT_DIRECTORY)
 
 from langchain_core.messages import HumanMessage
-from agents.engineer import engineer
+from adam.agents.engineer import engineer
 
-def engineer_node(state):
+async def engineer_node(state):
     """
     Rewrite the user prompt using prompt engineering techniques.
 
@@ -37,13 +38,14 @@ def engineer_node(state):
     prompt = state["messages"]
     
     # Initialize the engineer agent with the current state
-    engineer_chain = engineer(state)
+    engineer_chain = await engineer(state)
     
-    # Invoke the rewriting process on the extracted prompt
-    engineer_output = engineer_chain.invoke({"messages": prompt})
-    
+    engineer_output = await engineer_chain.ainvoke({"messages": prompt})
+
     # Wrap the rewritten prompt in a HumanMessage object for standardized handling
     engineer_message = HumanMessage(content=engineer_output, name="engineer")
 
     # Return the rewritten message
-    return {"messages": [engineer_message], "rewritten_prompt": engineer_output}
+    state["rewritten_prompt"] = engineer_output
+    state["messages"].append(engineer_message)
+    return state

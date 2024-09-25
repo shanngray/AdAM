@@ -9,7 +9,7 @@ load_dotenv()
 PROJECT_DIRECTORY = os.getenv("PROJECT_DIRECTORY")
 sys.path.insert(1, PROJECT_DIRECTORY)  # Include project directory in the system path for module imports
 
-from langchain_core.pydantic_v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_cohere import ChatCohere
 
@@ -21,11 +21,10 @@ class MetaSupervisorResponse(BaseModel):
     """Data model for analysing the meta conversation."""
     next_action: str = Field(description="The next action to be taken: 'Stop' or 'Continue'")
 
-def meta_supervisor(state):
+async def meta_supervisor():
     """
     Meta Supervisor
     """
-    subject = state["subject"]
     meta_supervisor_preamble = (
         "You are the Supervisor for a team of two agents that are experts in {subject}. Your job is to decide whether to keep iterating "
         " on the prompt or to stop. You are to only ever respond with 'Stop' or 'Continue': \n"

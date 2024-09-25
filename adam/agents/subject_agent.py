@@ -6,7 +6,7 @@ from langchain_cohere import ChatCohere
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage
 
-def subject_agent(state: dict):
+async def subject_agent(state: dict):
     system_prompt = (
         "# ROLE:\nYou are an expert prompt engineer. \n\n"
         "# TASK:\nAnalyse the prompt and determine the subject matter.\n\n"
@@ -34,7 +34,12 @@ def subject_agent(state: dict):
     # of the message (i.e. "system" or "user"), and the second element is the content of the message.
     # As the name suggests, MessagesPlaceholder allows us to create a placeholder for the messages that 
     # make up the conversational history.
-    subject_prompt = ChatPromptTemplate.from_messages([("system", system_prompt)])
+    subject_prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", system_prompt),
+            MessagesPlaceholder(variable_name="rewritten_prompt"),
+        ]
+    )
 
     output_parser = StrOutputParser()
  

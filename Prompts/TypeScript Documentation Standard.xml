@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<typescript-documentation-standard>
+  <inline-comments>
+    <rules>
+      <rule>Use inline comments sparingly, only when the code is not self-explanatory.</rule>
+      <rule>Place inline comments on the same line as the code they describe, or on the line above if they don't fit.</rule>
+      <rule>Start inline comments with two spaces, then // and another space.</rule>
+      <rule>Write comments in complete sentences, starting with a capital letter.</rule>
+    </rules>
+    <example>
+      <code>
+        let x = x + 1;  // Increment x
+      </code>
+    </example>
+  </inline-comments>
+
+  <function-and-method-documentation>
+    <format>
+      <![CDATA[
+/**
+ * Brief description of the function.
+ *
+ * @param param1 - Description of param1
+ * @param param2 - Description of param2
+ * @returns Description of the return value
+ * @throws {ErrorType} Description of when this error is thrown
+ *
+ * @example
+ * ```typescript
+ * const result = functionName('test', 42);
+ * console.log(result);
+ * // Expected output
+ * ```
+ */
+function functionName(param1: string, param2: number): ReturnType {
+  // Function body
+}
+      ]]>
+    </format>
+  </function-and-method-documentation>
+
+  <interface-and-type-documentation>
+    <format>
+      <![CDATA[
+/**
+ * Brief description of the interface or type.
+ */
+interface InterfaceName {
+  /**
+   * Description of property1
+   */
+  property1: string;
+
+  /**
+   * Description of property2
+   */
+  property2: number;
+
+  /**
+   * Description of methodName
+   * @param param - Description of param
+   * @returns Description of the return value
+   */
+  methodName(param: ParamType): ReturnType;
+}
+      ]]>
+    </format>
+  </interface-and-type-documentation>
+
+  <class-documentation>
+    <format>
+      <![CDATA[
+/**
+ * Brief description of the class.
+ *
+ * @example
+ * ```typescript
+ * const instance = new ClassName('example');
+ * instance.methodName();
+ * ```
+ */
+class ClassName {
+  /**
+   * Description of property
+   */
+  private property: PropertyType;
+
+  /**
+   * Creates an instance of ClassName.
+   * @param param - Description of param
+   */
+  constructor(param: ParamType) {
+    // Constructor body
+  }
+
+  /**
+   * Description of methodName
+   * @param param - Description of param
+   * @returns Description of the return value
+   */
+  public methodName(param: ParamType): ReturnType {
+    // Method body
+  }
+}
+      ]]>
+    </format>
+  </class-documentation>
+
+  <module-documentation>
+    <format>
+      <![CDATA[
+/**
+ * @fileoverview Brief description of the module.
+ *
+ * Extended description of the module (if necessary).
+ *
+ * @module ModuleName
+ */
+
+// Rest of the module code
+      ]]>
+    </format>
+  </module-documentation>
+
+  <general-guidelines>
+    <guideline>Use proper grammar, punctuation, and complete sentences in all documentation.</guideline>
+    <guideline>Keep descriptions concise but informative.</guideline>
+    <guideline>Use TypeScript type annotations in function signatures and documentation.</guideline>
+    <guideline>Include examples in documentation when they add clarity.</guideline>
+    <guideline>Update documentation when you modify code.</guideline>
+    <guideline>Use present tense in descriptions (e.g., "Returns" not "Return").</guideline>
+    <guideline>For complex algorithms, include a brief explanation of how they work.</guideline>
+    <guideline>Use JSDoc-style comments for better IDE integration and documentation generation.</guideline>
+  </general-guidelines>
+</typescript-documentation-standard>

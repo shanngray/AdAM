@@ -13,7 +13,7 @@ load_dotenv()
 PROJECT_DIRECTORY = os.getenv("PROJECT_DIRECTORY")
 sys.path.insert(1, PROJECT_DIRECTORY)  # Include project directory in the system path for module imports
 
-from langchain_core.pydantic_v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_cohere import ChatCohere
 
@@ -26,7 +26,7 @@ class AnalyserResponse(BaseModel):
     # response: str = Field(description="The human's response to the re-engineered prompt.")
     next_action: str = Field(description="The next action to be taken: 'Proceed' or 'Try Again'")
 
-def analyser(state):
+async def analyser(state):
 
     analyser_preamble = (
         "You are an analyst that assesses the user's response to the re-engineered prompt and assigns it to one of the following values: \n"

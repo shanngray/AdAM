@@ -6,14 +6,16 @@ from langchain_cohere import ChatCohere
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage
 
-def meta_two(state: dict):
-    prompt_seed = state["meta_prompt_two"]
+async def meta_two():
 
-    system_prompt = prompt_seed + "\n# NOTES:\n"
-    system_prompt += " - Be concise and specific.\n"
-    system_prompt += " - Be methodical. Explain your feedback step by step.\n"
-    system_prompt += " - Only return the feedback and nothing else.\n"
-    system_prompt += " - If the work is of good quality, return: COMPLETE.\n"
+    system_prompt = (
+        "{meta_prompt_two}\n"
+        "## NOTES:\n"
+        " - Be concise and specific.\n"
+        " - Be methodical. Explain your feedback step by step.\n"
+        " - Only return the feedback and nothing else.\n"
+        " - If the work is of good quality, return: COMPLETE.\n"
+    )
 
     llm = ChatCohere(model="command-r-plus", temperature=0.1)
     
@@ -25,7 +27,15 @@ def meta_two(state: dict):
     # of the message (i.e. "system" or "user"), and the second element is the content of the message.
     # As the name suggests, MessagesPlaceholder allows us to create a placeholder for the messages that 
     # make up the conversational history.
-    meta_two_prompt = ChatPromptTemplate.from_messages([("system", system_prompt)])
+    meta_two_prompt = ChatPromptTemplate.from_messages(
+        [
+            (
+                "system", 
+                system_prompt
+            ),
+            MessagesPlaceholder(variable_name="messages"),
+        ]
+    )
 
     output_parser = StrOutputParser()
  

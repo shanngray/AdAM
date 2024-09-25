@@ -30,7 +30,6 @@ class Constructor_State(TypedDict):
     meta_prompt_one: str # System prompt for meta_one
     meta_prompt_two: str # System prompt for meta_two
     plan: str # Plan for the meta-agents
-    websocket: WebSocket # WebSocket connection for the client
 
 
 class Meta_State(TypedDict):

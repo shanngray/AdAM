@@ -23,14 +23,16 @@ async def meta_node_two(meta_state):
     print("###Meta Node Two###\n")
 
     meta_messages = meta_state["meta_messages"]
+    meta_prompt_two = meta_state["meta_prompt_two"]
+    meta_two_chain = await meta_two()
 
-    meta_two_chain = await meta_two(meta_state)
-
-    meta_two_response = meta_two_chain.invoke({"messages": meta_messages})
+    meta_two_response = meta_two_chain.invoke({"meta_prompt_two": meta_prompt_two, "messages": meta_messages})
 
     # Wrap the rewritten prompt in a HumanMessage object for standardized handling
     meta_two_message = HumanMessage(content=meta_two_response, name="meta_two")
     
     print(f"meta two: {meta_two_response}\n")
-    return {"meta_messages": [meta_two_message]}
+
+    meta_state["meta_messages"].append(meta_two_message)
+    return meta_state
     

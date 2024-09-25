@@ -4,6 +4,7 @@
 import sys
 import os
 from dotenv import load_dotenv
+from langchain_core.messages import HumanMessage
 
 # Load environment variables from .env file
 load_dotenv(".env")
@@ -21,7 +22,7 @@ async def subject_node(state):
     """
     print("###Subject Node###\n")
 
-    rewritten_prompt = state["rewritten_prompt"]
+    rewritten_prompt = HumanMessage(content=state["rewritten_prompt"], name="Human")
 
     subject_chain = await subject_agent(state)
 
@@ -29,4 +30,8 @@ async def subject_node(state):
     subject_response = subject_chain.invoke({"rewritten_prompt": [rewritten_prompt]})
     
     print(f"subject: {subject_response}\n")
-    return {"subject": subject_response}
+    state["subject"] = subject_response
+    subject_message = HumanMessage(content=f"Thinking about the subject matter...", name="Subjectifier")
+    state["messages"].append(subject_message)
+
+    return state

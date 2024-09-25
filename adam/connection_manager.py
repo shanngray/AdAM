@@ -1,40 +1,42 @@
 from typing import List, Dict
 import asyncio
 from fastapi import WebSocket
+from starlette.websockets import WebSocketState
 
 class ConnectionManager:
     def __init__(self):
-        # Maps WebSocket ID to its input queue
-        self.input_queues: Dict[int, asyncio.Queue] = {}
-        self.active_connections: Dict[int, WebSocket] = {}
+        # Maps WebSocket to its input queue
+        self.input_queues: Dict[WebSocket, asyncio.Queue] = {}
+        self.active_connections: List[WebSocket] = []
 
-    async def connect(self, websocket: WebSocket) -> int:
+    async def connect(self, websocket: WebSocket):
         await websocket.accept()
-        ws_id = id(websocket)
-        self.active_connections[ws_id] = websocket
-        self.input_queues[ws_id] = asyncio.Queue()
-        print(f"[ConnectionManager] WebSocket connected: ID {ws_id}")
-        return ws_id
+        self.active_connections.append(websocket)
+        self.input_queues[websocket] = asyncio.Queue()
+        print(f"[ConnectionManager] WebSocket connected: {websocket}")
 
-    async def disconnect(self, ws_id: int):
-        websocket = self.active_connections.get(ws_id)
-        if websocket:
-            del self.active_connections[ws_id]
-            del self.input_queues[ws_id]
-            print(f"[ConnectionManager] WebSocket disconnected: ID {ws_id}")
+    async def disconnect(self, websocket: WebSocket):
+        if websocket in self.active_connections:
+            self.active_connections.remove(websocket)
+            del self.input_queues[websocket]
+            print(f"[ConnectionManager] WebSocket disconnected: {websocket}")
 
-    async def receive_input(self, ws_id: int, input_data: str):
-        queue = self.input_queues.get(ws_id)
+    async def receive_input(self, websocket: WebSocket, input_data: str):
+        queue = self.input_queues.get(websocket)
         if queue:
             await queue.put(input_data)
-            print(f"[ConnectionManager] Input enqueued for WebSocket ID {ws_id}: {input_data}")
+            print(f"[ConnectionManager] Input enqueued for {websocket}: {input_data}")
         else:
-            print(f"[ConnectionManager] No input queue found for WebSocket ID {ws_id}")
+            print(f"[ConnectionManager] No input queue found for {websocket}")
 
-    async def send_personal_message(self, message: str, ws_id: int):
-        websocket = self.active_connections.get(ws_id)
-        if websocket:
-            await websocket.send_text(message)
-            print(f"[ConnectionManager] Sent message to WebSocket ID {ws_id}: {message}")
+    async def send_personal_message(self, message: str, websocket: WebSocket):
+        if websocket.application_state == WebSocketState.CONNECTED:
+            try:
+                await websocket.send_text(message)
+                print(f"[ConnectionManager] Sent message to {websocket}: {message}")
+            except RuntimeError as e:
+                print(f"RuntimeError while sending message: {e}")
+        else:
+            print(f"[ConnectionManager] Cannot send message, WebSocket state: {websocket.application_state}")
 
 manager = ConnectionManager()

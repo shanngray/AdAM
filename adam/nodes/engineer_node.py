@@ -46,4 +46,6 @@ async def engineer_node(state):
     engineer_message = HumanMessage(content=engineer_output, name="engineer")
 
     # Return the rewritten message
-    return {"messages": [engineer_message], "rewritten_prompt": engineer_output}
+    state["rewritten_prompt"] = engineer_output
+    state["messages"].append(engineer_message)
+    return state

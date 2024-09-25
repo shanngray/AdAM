@@ -4,6 +4,7 @@ Builder Node
 import sys
 import os
 from dotenv import load_dotenv
+from langchain_core.messages import HumanMessage
 
 # Load environment variables from .env file
 load_dotenv(".env")
@@ -40,4 +41,10 @@ async def builder_node(state):
     
     complexity = plan.complexity
 
-    return {"meta_prompt_one": meta_prompt_one, "meta_prompt_two": meta_prompt_two, "plan": complexity, "subject": subject}
+    state["meta_prompt_one"] = meta_prompt_one
+    state["meta_prompt_two"] = meta_prompt_two
+    state["plan"] = complexity
+    builder_message = HumanMessage(content="Building Meta-Agents...", name="Builder")
+    state["messages"].append(builder_message)
+
+    return state

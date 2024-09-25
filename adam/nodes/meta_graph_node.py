@@ -43,8 +43,21 @@ async def meta_graph_node(state):
             print(f"<NODE: {node}>\n")
             if 'meta_messages' in meta_state:
                 print(f"{meta_state['meta_messages'][-1].name}: \"{meta_state['meta_messages'][-1].content}\"\n")
+                await manager.send_personal_message(json.dumps({
+                    "conversation_id": json_message["conversation_id"],
+                    "message": meta_state['meta_messages'][-1].content,
+                    "sender_name": meta_state['meta_messages'][-1].name,
+                    "type": "new_message",  # client-side type
+                    "conversation_state": "user_input"
+                    }), websocket)
+                node_message = MessageModel(
+                    conversation_id=json_message["conversation_id"],
+                    message=meta_state['meta_messages'][-1].content,
+                    sender_name=meta_state['meta_messages'][-1].name,
+                    type="inner"
+                )
+                new_msg = await db.add_message(node_message)                
             else:
                 print("No meta messages found in state.\n")
 
     return 
-

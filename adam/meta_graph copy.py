@@ -30,12 +30,17 @@ def build_metaflow(plan):
     metaflow.add_node("meta_node_one", meta_node_one)
     metaflow.add_node("meta_node_two", meta_node_two)
     metaflow.add_node("meta_node_supervisor", meta_node_supervisor)
-    metaflow.add_node("meta_node_search", meta_node_search)
-
-    metaflow.add_edge("meta_node_search", "meta_node_one")
-    metaflow.add_edge("meta_node_one", "meta_node_two")
-    metaflow.add_edge("meta_node_two", "meta_node_supervisor")
-    metaflow.set_entry_point("meta_node_search")
+    
+    if plan == "simple":
+        metaflow.add_edge("meta_node_one", "meta_node_two")
+        metaflow.add_edge("meta_node_two", "meta_node_supervisor")
+        metaflow.set_entry_point("meta_node_one")
+    elif plan == "complex":
+        metaflow.add_node("meta_node_search", meta_node_search)
+        metaflow.add_edge("meta_node_search", "meta_node_one")
+        metaflow.add_edge("meta_node_one", "meta_node_two")
+        metaflow.add_edge("meta_node_two", "meta_node_supervisor")
+        metaflow.set_entry_point("meta_node_search")
     
     metaflow.add_conditional_edges("meta_node_supervisor", supervisor_edge, {"Continue": "meta_node_one", "Stop": END})
 

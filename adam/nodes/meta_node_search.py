@@ -33,4 +33,6 @@ async def meta_node_search(meta_state):
 
     search_message = HumanMessage(content=search_result['output'], name="meta_search")    
 
-    return {"meta_messages": [search_message]}
+    meta_state["meta_messages"].append(search_message)
+
+    return meta_state

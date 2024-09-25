@@ -23,14 +23,12 @@ interface Conversation {
 
 interface ChatWindowProps {
   conversation: Conversation | null
-  onToggleSecondaryWindow: () => void
   ws: WebSocket | null
   onConversationChange: (conversation: Conversation) => void
 }
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ 
   conversation, 
-  onToggleSecondaryWindow, 
   ws,
   onConversationChange
 }) => {
@@ -39,6 +37,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
   // Use a ref to store the latest conversation state
   const conversationRef = useRef(conversation)
+
+  // Ref to the end of the messages list for auto-scrolling
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
   // Update local state and ref when the conversation prop changes
   useEffect(() => {
@@ -142,30 +143,32 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     }
   }, [ws, localConversation]);
 
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [messages])
+
   // Render the chat window
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex flex-col h-[93vh]"> {/* Change to h-full */}
+      {/* Scrollable Messages Container */}
       <div className="flex-1 overflow-y-auto">
         <MessageList messages={messages} />
+        <div ref={messagesEndRef} />
       </div>
+      
+      {/* Fixed Message Input */}
       {localConversation ? (
-        <MessageInput 
-          conversation={localConversation}
-          onSendMessage={handleMessageSent}
-        />
-      ) : (
-        <p>Loading conversation...</p>
-      )}
-      <button
-        className="btn btn-primary mt-2"
-        onClick={onToggleSecondaryWindow}
-      >
-        Toggle Secondary Window
-      </button>
-      {localConversation && (
-        <div className="mt-2 text-sm text-gray-500">
-          Conversation State: {localConversation.conversationState}
+        <div className="mt-auto">
+          <MessageInput 
+            conversation={localConversation}
+            onSendMessage={handleMessageSent}
+          />
         </div>
+      ) : (
+        <p className="p-4 mt-auto">Loading conversation...</p>
       )}
     </div>
   )

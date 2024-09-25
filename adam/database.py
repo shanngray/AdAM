@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.future import select
 from sqlalchemy.orm import sessionmaker, relationship
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional, List, Tuple
 from sqlalchemy import Column, Integer, String, ForeignKey, Text, delete, update
 from contextlib import asynccontextmanager
 from sqlalchemy import text, inspect
@@ -17,20 +17,24 @@ class Conversation(Base):
     Attributes:
         id (int): Primary key for the conversation.
         conversation_name (str): Optional name for the conversation.
-        subject (str): Subject of the conversation.
+        subject (Optional[str]): Subject of the conversation.
         rewritten_prompt (str): Rewritten prompt for the conversation.
-        meta_prompt_one (str): First meta prompt for the conversation.
-        meta_prompt_two (str): Second meta prompt for the conversation.
+        meta_prompt_one (Optional[str]): First meta prompt for the conversation.
+        meta_prompt_two (Optional[str]): Second meta prompt for the conversation.
+        analyser_decision (Optional[str]): Decision made by the analyser.
+        plan (Optional[str]): Plan associated with the conversation.
         messages (relationship): Relationship to associated messages.
         conversation_state (str): State of the conversation, defaults to "first_message".
     """
     __tablename__ = 'conversations'
     id = Column(Integer, primary_key=True, index=True)
     conversation_name = Column(String, nullable=True)
-    subject = Column(String)
-    rewritten_prompt = Column(Text)
-    meta_prompt_one = Column(Text)
-    meta_prompt_two = Column(Text)
+    subject = Column(String, nullable=True)
+    rewritten_prompt = Column(Text, nullable=True)
+    meta_prompt_one = Column(Text, nullable=True)
+    meta_prompt_two = Column(Text, nullable=True)
+    analyser_decision = Column(String, nullable=True)
+    plan = Column(Text, nullable=True)
     messages = relationship("Message", back_populates="conversation")
     conversation_state = Column(String, default="first_message")
 
@@ -62,18 +66,22 @@ class ConversationModel(BaseModel):
     Attributes:
         id (Optional[int]): ID of the conversation.
         conversation_name (Optional[str]): Name of the conversation.
-        subject (str): Subject of the conversation.
-        rewritten_prompt (str): Rewritten prompt for the conversation.
-        meta_prompt_one (str): First meta prompt for the conversation.
-        meta_prompt_two (str): Second meta prompt for the conversation.
+        subject (Optional[str]): Subject of the conversation.
+        rewritten_prompt (Optional[str]): Rewritten prompt for the conversation.
+        meta_prompt_one (Optional[str]): First meta prompt for the conversation.
+        meta_prompt_two (Optional[str]): Second meta prompt for the conversation.
+        analyser_decision (Optional[str]): Decision made by the analyser.
+        plan (Optional[str]): Plan associated with the conversation.
         conversation_state (str): State of the conversation, defaults to "first_message".
     """
     id: Optional[int] = None
     conversation_name: Optional[str] = None
-    subject: str
-    rewritten_prompt: str
-    meta_prompt_one: str
-    meta_prompt_two: str
+    subject: Optional[str] = None
+    rewritten_prompt: Optional[str] = None
+    meta_prompt_one: Optional[str] = None
+    meta_prompt_two: Optional[str] = None
+    analyser_decision: Optional[str] = None
+    plan: Optional[str] = None
     conversation_state: str = Field(default="first_message")
 
 class MessageModel(BaseModel):
@@ -232,6 +240,7 @@ class Database:
         async with self.session() as session:
             await session.execute(delete(Message))
 
+    # TODO: Assess if this is necessary - not currently used
     async def initialize_database(self):
         """
         Initialize the database with a default conversation and message.
@@ -242,6 +251,7 @@ class Database:
             rewritten_prompt="Welcome to the conversation",
             meta_prompt_one="This is meta prompt one",
             meta_prompt_two="This is meta prompt two"
+            # Note: Added analyser_decision and plan with default values
         )
         conv_id = await self.add_conversation(first_conversation)
         first_message = MessageModel(
@@ -337,8 +347,9 @@ class Database:
 
     async def delete_all_records(self):
         """Delete all records from all tables in the database."""
-
-        
+        async with self.session() as session:
+            await session.execute(delete(Conversation))
+            await session.execute(delete(Message))
         print("All records have been deleted from all tables.")
 
 # Create a global instance of the Database class

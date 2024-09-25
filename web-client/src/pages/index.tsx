@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useContext } from 'react'
 import ChatWindow from '../components/ChatWindow'
 import ConversationList from '../components/ConversationList'
 import SecondaryWindow from '../components/SecondaryWindow'
+import { SecondaryWindowContext } from '../components/SecondaryWindowContext'
 
 // Define types for conversations and messages
 interface Conversation {
@@ -26,8 +27,10 @@ interface Message {
 export default function Home() {
   // State management for the main components
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null)
-  const [isSecondaryWindowOpen, setIsSecondaryWindowOpen] = useState(false)
   const [ws, setWs] = useState<WebSocket | null>(null)
+
+  // Consume context
+  const { isSecondaryWindowOpen } = useContext(SecondaryWindowContext)
 
   // Function to set up WebSocket connection
   const setupWebSocket = useCallback(() => {
@@ -138,21 +141,26 @@ export default function Home() {
   }, [ws, selectedConversation]);
 
   return (
-    <div className="flex h-[calc(100vh-4rem)]">
+    <div className="flex flex-1 overflow-hidden">
       <ConversationList
         selectedConversation={selectedConversation}
         onSelectConversation={handleSelectConversation}
         onNewConversation={handleNewConversation}
         ws={ws}
       />
-      <div className="flex-1 flex flex-col">
-        <ChatWindow
-          conversation={selectedConversation}
-          onConversationChange={handleConversationChange}
-          onToggleSecondaryWindow={() => setIsSecondaryWindowOpen(!isSecondaryWindowOpen)}
-          ws={ws}
-        />
-        {isSecondaryWindowOpen && <SecondaryWindow conversation={selectedConversation} />}
+      <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex flex-col">
+          <ChatWindow
+            conversation={selectedConversation}
+            onConversationChange={handleConversationChange}
+            ws={ws}
+          />
+        </div>
+        {isSecondaryWindowOpen && (
+          <div className="w-1/3 border-l border-base-300 overflow-y-auto">
+            <SecondaryWindow conversation={selectedConversation} />
+          </div>
+        )}
       </div>
     </div>
   )

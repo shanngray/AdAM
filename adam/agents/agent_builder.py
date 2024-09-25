@@ -43,7 +43,12 @@ async def agent_builder(state: dict, agent_type: str):
     # of the message (i.e. "system" or "user"), and the second element is the content of the message.
     # As the name suggests, MessagesPlaceholder allows us to create a placeholder for the messages that 
     # make up the conversational history.
-    builder_prompt = ChatPromptTemplate.from_messages([("system", system_prompt)])
+    builder_prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", system_prompt),
+            ("user", "Please create the system prompt for an agent that is an expert in: {subject}"),
+        ]
+    )
 
     output_parser = StrOutputParser()
  

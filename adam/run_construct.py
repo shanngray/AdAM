@@ -15,8 +15,6 @@ async def run_construct(inputs: dict, websocket: WebSocket, data: str, thread: d
     print(f"[process_graph] Started for {websocket} with message: {json_message}")
     if user_input:
         print(f"[process_graph] user_input: {user_input}\n")
-        print(f"[process_graph] thread: {thread}\n")
-        print(f"[process_graph] inputs: {inputs}\n")
         async for output in main_graph.astream(inputs, thread, stream_mode="updates"):
             for node, state in output.items():
                 print(f"[process_graph] <NODE: {node}>\n")
@@ -49,6 +47,7 @@ async def run_construct(inputs: dict, websocket: WebSocket, data: str, thread: d
                     conversation_state="user_input",
                     rewritten_prompt=state["rewritten_prompt"] if "rewritten_prompt" in state else None,
                     analyser_decision=state["analyser_decision"] if "analyser_decision" in state else None,
+                    conversation_name=state["conversation_name"] if "conversation_name" in state else None,
                     subject=state["subject"] if "subject" in state else None,
                     plan=state["plan"] if "plan" in state else None,
                     meta_prompt_one=state["meta_prompt_one"] if "meta_prompt_one" in state else None,
@@ -58,13 +57,16 @@ async def run_construct(inputs: dict, websocket: WebSocket, data: str, thread: d
                     "conversationState": "user_input", 
                     "rewritten_prompt": state["rewritten_prompt"] if "rewritten_prompt" in state else None,
                     "analyser_decision": state["analyser_decision"] if "analyser_decision" in state else None,
+                    "conversation_name": state["conversation_name"] if "conversation_name" in state else None,
                     "subject": state["subject"] if "subject" in state else None,
                     "plan": state["plan"] if "plan" in state else None,
                     "meta_prompt_one": state["meta_prompt_one"] if "meta_prompt_one" in state else None,
                     "meta_prompt_two": state["meta_prompt_two"] if "meta_prompt_two" in state else None
                 }
                 if update_conv:
-                    await manager.send_personal_message(json.dumps({
+                   print("sending updated conversation to web client.")
+                   print(f"updated_fields: {updated_fields}")
+                   await manager.send_personal_message(json.dumps({
                         "type": "conversation_updated",
                         "conversation_id": json_message["conversation_id"],
                         "updated_fields": updated_fields

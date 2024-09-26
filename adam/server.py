@@ -143,8 +143,6 @@ async def websocket_endpoint(websocket: WebSocket):
             elif json_message["type"] == "create_conversation":
                 print("[WebSocket] Handling create_conversation")
                 
-                # Collect all required fields. Here, we're using default values.
-                # Ideally, these should come from the `json_message`.
                 conversation = ConversationModel(
                     conversation_name=json_message.get("name"),
                     subject=json_message.get("subject", "Default Subject"),
@@ -156,9 +154,30 @@ async def websocket_endpoint(websocket: WebSocket):
                 )
                 
                 new_conv = await db.add_conversation(conversation)
+                print(f"new_conv: {new_conv}")
+
+                # Add initial message from AdAM
+                initial_message = MessageModel(
+                    conversation_id=new_conv.id,
+                    sender_name="AdAM",
+                    message="How can I help you?",
+                    type="outer"
+                )
+                new_msg_id = await db.add_message(initial_message)
+
+                # Send new conversation and initial message to the client
                 await manager.send_personal_message(json.dumps({
                     "type": "new_conversation",
-                    "data": {"conversationId": new_conv.id, "conversationName": new_conv.conversation_name}
+                    "data": {
+                        "conversationId": new_conv.id, 
+                        "conversationName": new_conv.conversation_name,
+                        "initialMessage": {
+                            "id": new_msg_id,
+                            "sender_name": "AdAM",
+                            "message": "How can I help you?",
+                            "type": "outer"
+                        }
+                    }
                 }), websocket)
 
             elif json_message["type"] == "update_conversation":

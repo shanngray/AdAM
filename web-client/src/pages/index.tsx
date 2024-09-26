@@ -95,8 +95,9 @@ export default function Home() {
 
   // Handler for creating a new conversation
   const handleNewConversation = (newConversation: Conversation) => {
-    console.log("Home: New conversation created", newConversation)
-    setSelectedConversation(newConversation)
+    console.log("Home: New conversation created", newConversation);
+    setSelectedConversation(newConversation);
+    // No need to send anything to the server here, as it's already done in ConversationList
   }
 
   // Handler for updating the selected conversation

@@ -150,7 +150,7 @@ class Database:
             await conn.run_sync(Base.metadata.create_all)
         print("Database initialized with all tables recreated.")
 
-    async def add_conversation(self, conversation: ConversationModel) -> int:
+    async def add_conversation(self, conversation: ConversationModel) -> ConversationModel:
         """
         Add a new conversation to the database.
 
@@ -158,13 +158,14 @@ class Database:
             conversation (ConversationModel): The conversation to add.
 
         Returns:
-            int: The ID of the newly added conversation.
+            ConversationModel: The newly added conversation with its ID.
         """
         async with self.session() as session:
             db_conversation = Conversation(**conversation.dict(exclude={'id'}))
             session.add(db_conversation)
             await session.flush()
-            return db_conversation.id
+            # Create a new ConversationModel with the generated ID
+            return ConversationModel(**db_conversation.__dict__)
 
     async def update_conversation(self, conversation_id: int, **kwargs):
         """

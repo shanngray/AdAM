@@ -32,20 +32,15 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   ws,
   onConversationChange
 }) => {
+  const [localConversation, setLocalConversation] = useState<Conversation | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
-  const [localConversation, setLocalConversation] = useState(conversation)
-
-  // Use a ref to store the latest conversation state
-  const conversationRef = useRef(conversation)
-
-  // Ref to the end of the messages list for auto-scrolling
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  // Update local state and ref when the conversation prop changes
   useEffect(() => {
-    conversationRef.current = conversation
     setLocalConversation(conversation)
-    console.log("ChatWindow: Conversation updated from parent", conversation)
+    if (conversation?.conversationState === 'new') {
+      setMessages([])
+    }
   }, [conversation])
 
   // Set up WebSocket event listener and request conversation history
@@ -70,6 +65,18 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
               timestamp: new Date().toISOString()
             }
             setMessages(prevMessages => [...prevMessages, newMessage])
+            break
+          case 'new_conversation':
+            if (data.data.initialMessage) {
+              const initialMessage: Message = {
+                id: data.data.initialMessage.id,
+                sender_name: data.data.initialMessage.sender_name,
+                message: data.data.initialMessage.message,
+                type: data.data.initialMessage.type,
+                timestamp: new Date().toISOString()
+              }
+              setMessages([initialMessage])
+            }
             break
           case 'conversation_updated':
             if (localConversation && localConversation.conversationId === data.conversation_id) {
@@ -111,35 +118,30 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
   // Handler for sending messages
   const handleMessageSent = useCallback((message: string) => {
+    if (!localConversation || !ws) return
 
-    if (ws && localConversation) {
-      // Create a new message object and add it to local state
-      const newMessage = {
-        id: Date.now(),
-        sender_name: 'User',
-        message: message,
-        type: 'outer',
-        timestamp: new Date().toISOString()
-      };
-      setMessages(prevMessages => [...prevMessages, newMessage]);
+    const newMessage: Message = {
+      id: Date.now(),
+      sender_name: 'User',
+      message: message,
+      type: 'text',
+      timestamp: new Date().toISOString()
+    }
 
-      // Send the message to the server
-      console.log("Preparing to send message:", message);
-      console.log("Current conversation state:", localConversation.conversationState);
-      
-      const sendMessage = JSON.stringify({
+    setMessages(prevMessages => [...prevMessages, newMessage])
+
+    if (localConversation.conversationState === 'new') {
+      ws.send(JSON.stringify({
+        type: 'create_conversation',
+        message: message
+      }))
+    } else {
+      ws.send(JSON.stringify({
         type: localConversation.conversationState,
         conversation_id: localConversation.conversationId,
         content: message,
         sender_name: 'User'
-      })
-      
-      console.log("Sending WebSocket message:", sendMessage);
-      ws.send(sendMessage);
-      
-      console.log("Message sent successfully");
-    } else {
-      console.log("ChatWindow: Unable to send message - WebSocket or conversation not available")
+      }))
     }
   }, [ws, localConversation]);
 
@@ -152,24 +154,20 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
   // Render the chat window
   return (
-    <div className="flex flex-col h-[93vh]"> {/* Change to h-full */}
+    <div className="flex flex-col h-[93vh]">
       {/* Scrollable Messages Container */}
       <div className="flex-1 overflow-y-auto">
         <MessageList messages={messages} />
         <div ref={messagesEndRef} />
       </div>
       
-      {/* Fixed Message Input */}
-      {localConversation ? (
-        <div className="mt-auto">
-          <MessageInput 
-            conversation={localConversation}
-            onSendMessage={handleMessageSent}
-          />
-        </div>
-      ) : (
-        <p className="p-4 mt-auto">Loading conversation...</p>
-      )}
+      {/* Always render MessageInput */}
+      <div className="mt-auto">
+        <MessageInput 
+          conversation={localConversation}
+          onSendMessage={handleMessageSent}
+        />
+      </div>
     </div>
   )
 }

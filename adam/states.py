@@ -24,6 +24,7 @@ class Constructor_State(TypedDict):
         prompt (str): The initial or current prompt used to guide the conversation or interaction.
     """
     messages: Annotated[list[AnyMessage], add_messages] # List of messages for constructor agents
+    conversation_name: str # Name of the conversation
     subject: str # Subject of the conversation
     rewritten_prompt: str # Rewritten prompt using prompt engineering techniques
     analyser_decision: str # Decision of the analyser agent

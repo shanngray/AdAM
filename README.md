@@ -53,7 +53,7 @@ DEBUG="True"
 
 Run this on the root directory (so at /AdAM directory)
 ```bash
-poetry run py adam/main.pych
+poetry run py adam/main.py
 Hello, how can I help you today?
 
 ```

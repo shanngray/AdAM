@@ -1,8 +1,10 @@
 import React, { useContext, useState, useRef, useEffect } from 'react'
 import { SecondaryWindowContext } from './SecondaryWindowContext'
+import { SelectedConversationContext } from './SelectedConversationContext'
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { toggleSecondaryWindow } = useContext(SecondaryWindowContext)
+  const { selectedConversation } = useContext(SelectedConversationContext)
   const [theme, setTheme] = useState('mytheme')
   const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false)
   const themeMenuRef = useRef<HTMLLIElement>(null)
@@ -48,6 +50,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <header className="flex-none h-[7vh] navbar bg-base-100">
         <div className="flex-1">
           <a className="btn btn-ghost normal-case text-xl">Ad.A.M</a>
+        </div>
+        {/* Display Conversation Name */}
+        <div className="flex-1 text-center">
+          <h1 className="text-2xl font-bold">
+            {selectedConversation?.conversationName || 'Conversations'}
+          </h1>
         </div>
         {/* Dropdown Menu */}
         <div className="dropdown dropdown-end z-50">

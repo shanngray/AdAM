@@ -3,6 +3,7 @@ import ChatWindow from '../components/ChatWindow'
 import ConversationList from '../components/ConversationList'
 import SecondaryWindow from '../components/SecondaryWindow'
 import { SecondaryWindowContext } from '../components/SecondaryWindowContext'
+import { SelectedConversationContext } from '../components/SelectedConversationContext'
 
 // Define types for conversations and messages
 interface Conversation {
@@ -10,6 +11,7 @@ interface Conversation {
   conversationName: string;
   conversationState: string;
   subject: string;
+  plan: string;
   rewrittenPrompt: string;
   metaPromptOne: string;
   metaPromptTwo: string;
@@ -26,7 +28,7 @@ interface Message {
 
 export default function Home() {
   // State management for the main components
-  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null)
+  const { selectedConversation, setSelectedConversation } = useContext(SelectedConversationContext)
   const [ws, setWs] = useState<WebSocket | null>(null)
 
   // Consume context
@@ -79,7 +81,7 @@ export default function Home() {
       console.log("Home: Cleaning up WebSocket connection")
       socket.close()
     }
-  }, [])
+  }, [setSelectedConversation])
 
   // Set up WebSocket connection on component mount
   useEffect(() => {
@@ -139,13 +141,11 @@ export default function Home() {
     return () => {
       ws.removeEventListener('message', handleWebSocketMessage);
     };
-  }, [ws, selectedConversation]);
+  }, [ws, selectedConversation, setSelectedConversation]);
 
   return (
     <div className="flex flex-1 overflow-hidden">
       <ConversationList
-        selectedConversation={selectedConversation}
-        onSelectConversation={handleSelectConversation}
         onNewConversation={handleNewConversation}
         ws={ws}
       />

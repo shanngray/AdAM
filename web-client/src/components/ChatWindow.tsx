@@ -17,8 +17,6 @@ interface Conversation {
   conversationState: string;
   subject: string;
   rewrittenPrompt: string;
-  metaPromptOne: string;
-  metaPromptTwo: string;
 }
 
 interface ChatWindowProps {

@@ -20,13 +20,16 @@ from states import Constructor_State, Meta_State
 from adam.nodes.engineer_node import engineer_node
 from adam.nodes.analyser_node import analyser_node
 from adam.nodes.human_node import human_node
-from adam.nodes.subject_node import subject_node
-from adam.nodes.builder_node import builder_node
 from adam.nodes.namer_node import namer_node
+from adam.nodes.subject_node import subject_node
+from adam.nodes.blueprinter_node import blueprinter_node
+from adam.nodes.artist_node import artist_node
+from adam.nodes.builder_node import builder_node
+from adam.nodes.meta_graph_node import meta_graph_node
 
 from adam.edges.analyser_edge import analyser_edge
+from adam.edges.builder_edge import builder_edge
 
-from adam.nodes.meta_graph_node import meta_graph_node
 
 # Initialize the state graph with the base state
 # StateGraph: A graph structure that manages states and transitions.
@@ -38,6 +41,8 @@ constructflow.add_node("analyser_node", analyser_node)
 constructflow.add_node("human_node", human_node)
 constructflow.add_node("namer_node", namer_node)
 constructflow.add_node("subject_node", subject_node)
+constructflow.add_node("blueprinter_node", blueprinter_node)
+constructflow.add_node("artist_node", artist_node)
 constructflow.add_node("builder_node", builder_node)
 constructflow.add_node("meta_graph_node", meta_graph_node)
 
@@ -47,6 +52,7 @@ constructflow.add_node("meta_graph_node", meta_graph_node)
 # possible output strings from the edge function, and the values are the names of the nodes that the edge will go to.
 # The flow branches after the analyser node. The analyser_edge function determines which branch (or edge) will be taken.
 constructflow.add_conditional_edges("analyser_node", analyser_edge, {"Try Again": "engineer_node", "Proceed": "namer_node"})
+constructflow.add_conditional_edges("builder_node", builder_edge, {"Another": "blueprinter_node", "Enough": "meta_graph_node"})
 
 # Standard edges. These are used where the flow always takes the same path between nodes/agents.
 # The source node is always on the left and the destination node is always on the right.
@@ -57,8 +63,9 @@ constructflow.add_conditional_edges("analyser_node", analyser_edge, {"Try Again"
 constructflow.add_edge("engineer_node", "human_node")  # Direct transition from engineer to human
 constructflow.add_edge("human_node", "analyser_node")  # Direct transition from human to analyser
 constructflow.add_edge("namer_node", "subject_node") # Transition from namer to subject
-constructflow.add_edge("subject_node", "builder_node") # Transition from subject to builder
-constructflow.add_edge("builder_node", "meta_graph_node") # Transition from builder to meta_node_one
+constructflow.add_edge("subject_node", "blueprinter_node") # Transition from subject to builder
+constructflow.add_edge("blueprinter_node", "artist_node") # Transition from blueprinter to builder
+constructflow.add_edge("artist_node", "builder_node") # Transition from blueprinter to builder
 constructflow.add_edge("meta_graph_node", END) # Transition from meta_node_one to meta_node_supervisor
 
 # Set the initial node where the graph processing will start.

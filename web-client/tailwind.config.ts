@@ -20,10 +20,10 @@ const config: Config = {
     themes: ["light", "dark", "cupcake", "lemonade",
     {
       mytheme: {        
-        "primary": "#6700FF",
-        "secondary": "#3B0091",
-        "accent": "#4C00BC",
-        "neutral": "#E3F0FF",
+        "primary": "#8700FF",
+        "secondary": "#AB0091",
+        "accent": "#8C00BC",
+        "neutral": "#A370BF",
         "base-100": "#FBFAFF",
         "info": "#0000ff",
         "success": "#166534",

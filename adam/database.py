@@ -4,7 +4,7 @@ from sqlalchemy.future import select
 from sqlalchemy.orm import sessionmaker, relationship
 from pydantic import BaseModel, Field
 from typing import Optional, List, Tuple
-from sqlalchemy import Column, Integer, String, ForeignKey, Text, delete, update
+from sqlalchemy import Column, Integer, Float, String, ForeignKey, Text, delete, update
 from contextlib import asynccontextmanager
 from sqlalchemy import text, inspect
 
@@ -19,10 +19,8 @@ class Conversation(Base):
         conversation_name (str): Optional name for the conversation.
         subject (Optional[str]): Subject of the conversation.
         rewritten_prompt (str): Rewritten prompt for the conversation.
-        meta_prompt_one (Optional[str]): First meta prompt for the conversation.
-        meta_prompt_two (Optional[str]): Second meta prompt for the conversation.
+        agent_blueprints (relationship): Relationship to associated agent blueprints.
         analyser_decision (Optional[str]): Decision made by the analyser.
-        plan (Optional[str]): Plan associated with the conversation.
         messages (relationship): Relationship to associated messages.
         conversation_state (str): State of the conversation, defaults to "first_message".
     """
@@ -31,10 +29,8 @@ class Conversation(Base):
     conversation_name = Column(String, nullable=True)
     subject = Column(String, nullable=True)
     rewritten_prompt = Column(Text, nullable=True)
-    meta_prompt_one = Column(Text, nullable=True)
-    meta_prompt_two = Column(Text, nullable=True)
+    meta_agents = relationship("MetaAgent", back_populates="conversation")
     analyser_decision = Column(String, nullable=True)
-    plan = Column(Text, nullable=True)
     messages = relationship("Message", back_populates="conversation")
     conversation_state = Column(String, default="first_message")
 
@@ -59,6 +55,33 @@ class Message(Base):
 
     conversation = relationship("Conversation", back_populates="messages")
 
+class MetaAgent(Base):
+    """
+    SQLAlchemy model for agent blueprints.
+
+    Attributes:
+        id (int): Primary key for the agent.
+        conversation_id (int): Foreign key to the associated conversation.
+        name (str): Name of the agent.
+        personality (str): Personality of the agent.
+        temperament (str): Temperament of the agent.
+        temperature (float): Temperature of the agent.
+        role (str): Role of the agent.
+        url (str): URL of the agent.
+        system_prompt (str): System prompt of the agent.
+    """
+    __tablename__ = 'meta_agents'
+    id = Column(Integer, primary_key=True, index=True)
+    conversation_id = Column(Integer, ForeignKey('conversations.id'), nullable=False)
+    name = Column(String, nullable=False)
+    personality = Column(String, nullable=False)
+    temperament = Column(String, nullable=False)
+    temperature = Column(Float, nullable=False)
+    role = Column(String, nullable=False)
+    url = Column(String, nullable=False)
+    system_prompt = Column(Text, nullable=False)
+    conversation = relationship("Conversation", back_populates="meta_agents")
+
 class ConversationModel(BaseModel):
     """
     Pydantic model for conversations.
@@ -67,21 +90,15 @@ class ConversationModel(BaseModel):
         id (Optional[int]): ID of the conversation.
         conversation_name (Optional[str]): Name of the conversation.
         subject (Optional[str]): Subject of the conversation.
-        rewritten_prompt (Optional[str]): Rewritten prompt for the conversation.
-        meta_prompt_one (Optional[str]): First meta prompt for the conversation.
-        meta_prompt_two (Optional[str]): Second meta prompt for the conversation.
+        rewritten_prompt (Optional[str]): Rewritten prompt for the conversation.        
         analyser_decision (Optional[str]): Decision made by the analyser.
-        plan (Optional[str]): Plan associated with the conversation.
         conversation_state (str): State of the conversation, defaults to "first_message".
     """
     id: Optional[int] = None
     conversation_name: Optional[str] = None
     subject: Optional[str] = None
     rewritten_prompt: Optional[str] = None
-    meta_prompt_one: Optional[str] = None
-    meta_prompt_two: Optional[str] = None
     analyser_decision: Optional[str] = None
-    plan: Optional[str] = None
     conversation_state: str = Field(default="first_message")
 
 class MessageModel(BaseModel):
@@ -100,6 +117,31 @@ class MessageModel(BaseModel):
     sender_name: str
     message: str
     type: str
+
+class MetaAgentModel(BaseModel):
+    """
+    Pydantic model for meta agent.
+
+    Attributes:
+        id (Optional[int]): ID of the agent.
+        conversation_id (int): ID of the associated conversation.
+        name (str): Name of the agent.
+        personality (str): Personality of the agent.
+        temperament (str): Temperament of the agent.
+        temperature (float): Temperature of the agent.
+        role (str): Role of the agent.
+        url (str): URL of the agent.
+        system_prompt (str): System prompt of the agent.
+    """
+    id: Optional[int] = None
+    conversation_id: int
+    name: str
+    personality: str
+    temperament: str
+    temperature: float
+    role: str
+    url: str
+    system_prompt: str
 
 class Database:
     """
@@ -204,7 +246,23 @@ class Database:
             await session.flush()
             return db_message.id
 
-    async def get_conversations(self) -> List[ConversationModel]:
+    async def add_meta_agent(self, meta_agent: MetaAgentModel) -> int:
+        """
+        Add a new meta agent to the database.
+
+        Args:
+            meta_agent (MetaAgentModel): The meta agent to add.
+
+        Returns:
+            int: The ID of the newly added meta agent.
+        """
+        async with self.session() as session:
+            db_meta_agent = MetaAgent(**meta_agent.dict(exclude={'id'}))
+            session.add(db_meta_agent)
+            await session.flush()
+            return db_meta_agent.id
+
+    async def get_conversations(self) -> List[ConversationModel]:   
         """
         Retrieve all conversations from the database.
 
@@ -250,8 +308,6 @@ class Database:
         first_conversation = ConversationModel(
             subject="Initial Conversation",
             rewritten_prompt="Welcome to the conversation",
-            meta_prompt_one="This is meta prompt one",
-            meta_prompt_two="This is meta prompt two"
             # Note: Added analyser_decision and plan with default values
         )
         conv_id = await self.add_conversation(first_conversation)

@@ -7,8 +7,6 @@ interface Conversation {
   conversationState: string;
   subject: string;
   rewrittenPrompt: string;
-  metaPromptOne: string;
-  metaPromptTwo: string;
 }
 
 interface ConversationListProps {
@@ -51,8 +49,6 @@ const ConversationList: React.FC<ConversationListProps> = ({
             conversationState: 'first_message',
             subject: '',
             rewrittenPrompt: '',
-            metaPromptOne: '',
-            metaPromptTwo: '',
           };
           setConversations(prevConversations => [...prevConversations, newConversation]);
           onNewConversation(newConversation);
@@ -92,8 +88,6 @@ const ConversationList: React.FC<ConversationListProps> = ({
       conversationState: 'new',
       subject: '',
       rewrittenPrompt: '',
-      metaPromptOne: '',
-      metaPromptTwo: '',
     };
 
     ws.send(

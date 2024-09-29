@@ -34,3 +34,4 @@ web-client/.next/
 web-client/node_modules/
 web-client/next-env.d.ts
 
+web-client/public/agent_portraits/

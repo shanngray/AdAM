@@ -28,9 +28,8 @@ class Constructor_State(TypedDict):
     subject: str # Subject of the conversation
     rewritten_prompt: str # Rewritten prompt using prompt engineering techniques
     analyser_decision: str # Decision of the analyser agent
-    meta_prompt_one: str # System prompt for meta_one
-    meta_prompt_two: str # System prompt for meta_two
-    plan: str # Plan for the meta-agents
+    meta_team_size: int # Number of meta-agents in the team
+    agent_blueprints: list[dict] # List of agent blueprints
 
 
 class Meta_State(TypedDict):

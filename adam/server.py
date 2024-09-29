@@ -75,7 +75,9 @@ async def websocket_endpoint(websocket: WebSocket):
                 new_msg = await db.add_message(db_message)
                 user_input = json_message.get("content")
                 inputs = {
-                    "messages": [HumanMessage(content=user_input, name="human")]
+                    "messages": [HumanMessage(content=user_input, name="human")],
+                    "agent_blueprints": [],
+                    "meta_team_size": 4
                 }
                 asyncio.create_task(run_construct(inputs, websocket, data, construct_thread))
                 print("--Interupt before Human Node--")
@@ -101,13 +103,13 @@ async def websocket_endpoint(websocket: WebSocket):
                 construct_task = asyncio.create_task(run_construct(None, websocket, data, construct_thread))
                 
                 # Wait for the first task to complete
-                print("Waiting for construct task to complete")
+                print("###Waiting for construct task to complete###")
                 done, pending = await asyncio.wait([construct_task], return_when=asyncio.FIRST_COMPLETED)
                 
                 print("Running meta task")
                 # Run the second task
-                meta_task = asyncio.create_task(run_meta_graph(json_message["conversation_id"], websocket, data, meta_thread)) 
-                await meta_task
+                # meta_task = asyncio.create_task(run_meta_graph(json_message["conversation_id"], websocket, data, meta_thread)) 
+                #await meta_task
 
             elif json_message["type"] == "get_latest_conversation":
                 print("[WebSocket] Handling get_latest_conversation")
@@ -125,8 +127,6 @@ async def websocket_endpoint(websocket: WebSocket):
                                     "conversationState": conversation.conversation_state,
                                     "subject": conversation.subject,
                                     "rewrittenPrompt": conversation.rewritten_prompt,
-                                    "metaPromptOne": conversation.meta_prompt_one,
-                                    "metaPromptTwo": conversation.meta_prompt_two
                                 }
                             }), websocket)
                         else:
@@ -147,10 +147,7 @@ async def websocket_endpoint(websocket: WebSocket):
                     conversation_name=json_message.get("name"),
                     subject=json_message.get("subject", "Default Subject"),
                     rewritten_prompt=json_message.get("rewritten_prompt", "Default Rewritten Prompt"),
-                    meta_prompt_one=json_message.get("meta_prompt_one", "Default Meta Prompt One"),
-                    meta_prompt_two=json_message.get("meta_prompt_two", "Default Meta Prompt Two"),
                     analyser_decision=json_message.get("analyser_decision", "Pending"),
-                    plan=json_message.get("plan", "Default Plan"),
                 )
                 
                 new_conv = await db.add_conversation(conversation)

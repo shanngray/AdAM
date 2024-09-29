@@ -4,6 +4,7 @@ import ConversationList from '../components/ConversationList'
 import SecondaryWindow from '../components/SecondaryWindow'
 import { SecondaryWindowContext } from '../components/SecondaryWindowContext'
 import { SelectedConversationContext } from '../components/SelectedConversationContext'
+import { MetaAgentsContext, MetaAgent } from '../components/MetaAgentsContext'
 
 // Define types for conversations and messages
 interface Conversation {
@@ -13,8 +14,6 @@ interface Conversation {
   subject: string;
   plan: string;
   rewrittenPrompt: string;
-  metaPromptOne: string;
-  metaPromptTwo: string;
 }
 
 interface Message {
@@ -30,6 +29,7 @@ export default function Home() {
   // State management for the main components
   const { selectedConversation, setSelectedConversation } = useContext(SelectedConversationContext)
   const [ws, setWs] = useState<WebSocket | null>(null)
+  const { setMetaAgents } = useContext(MetaAgentsContext)
 
   // Consume context
   const { isSecondaryWindowOpen } = useContext(SecondaryWindowContext)
@@ -68,9 +68,22 @@ export default function Home() {
             ...prevConversation,
             ...data.data,
           }))
+        } else if (data.type === 'agent_blueprints') {
+          console.log("Home: Received agent_blueprints data", data.agent_blueprints)
+          const agents: MetaAgent[] = data.agent_blueprints.map((agent: any) => ({
+            id: agent.id,
+            name: agent.name,
+            personality: agent.personality,
+            temperament: agent.temperament,
+            temperature: agent.temperature,
+            role: agent.role,
+            url: agent.url,
+            system_prompt: agent.system_prompt,
+          }))
+          setMetaAgents(agents)
         } else {
-          // TODO: work out why this keeps firing
-          //console.log("Home: Unhandled message type:", data.type)
+          // Handle other message types if necessary
+          console.log("Home: Unhandled message type:", data.type)
         }
       } catch (error) {
         console.error("Home: Error parsing message:", error)
@@ -81,7 +94,7 @@ export default function Home() {
       console.log("Home: Cleaning up WebSocket connection")
       socket.close()
     }
-  }, [setSelectedConversation])
+  }, [setSelectedConversation, setMetaAgents])
 
   // Set up WebSocket connection on component mount
   useEffect(() => {

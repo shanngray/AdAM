@@ -1,7 +1,7 @@
 from fastapi import WebSocket
 from langchain_core.messages import HumanMessage
 from adam.constructor_graph import constructflow
-from adam.database import db, MessageModel
+from adam.database import db, MessageModel, MetaAgentModel
 from adam.connection_manager import manager
 
 import json
@@ -42,6 +42,28 @@ async def run_construct(inputs: dict, websocket: WebSocket, data: str, thread: d
                     new_msg = await db.add_message(node_message)
                 else:
                     print("[process_graph] No messages found in state.\n")
+                if state['agent_blueprints']:
+                    print(f"[process_graph] agent_blueprint: {state['agent_blueprints'][-1]['name']}")
+                    await manager.send_personal_message(json.dumps({
+                        "conversation_id": json_message["conversation_id"],
+                        "agent_blueprints": state['agent_blueprints'],
+                        "type": "agent_blueprints",
+                    }), websocket)
+                    if  node == "builder_node":
+                        node_agent = MetaAgentModel(
+                            conversation_id=json_message["conversation_id"],
+                            name=state['agent_blueprints'][-1]['name'],
+                            personality=state['agent_blueprints'][-1]['personality'],
+                            temperament=state['agent_blueprints'][-1]['temperament'],
+                            temperature=state['agent_blueprints'][-1]['temperature'],
+                            role=state['agent_blueprints'][-1]['role'],
+                            url=state['agent_blueprints'][-1]['url'],
+                            system_prompt=state['agent_blueprints'][-1]['system_prompt']
+                        )
+                        new_agent = await db.add_meta_agent(node_agent)
+                else:
+                    print("[process_graph] No agent blueprints found in state.\n")  
+
                 update_conv = await db.update_conversation(
                     json_message["conversation_id"], 
                     conversation_state="user_input",
@@ -49,9 +71,6 @@ async def run_construct(inputs: dict, websocket: WebSocket, data: str, thread: d
                     analyser_decision=state["analyser_decision"] if "analyser_decision" in state else None,
                     conversation_name=state["conversation_name"] if "conversation_name" in state else None,
                     subject=state["subject"] if "subject" in state else None,
-                    plan=state["plan"] if "plan" in state else None,
-                    meta_prompt_one=state["meta_prompt_one"] if "meta_prompt_one" in state else None,
-                    meta_prompt_two=state["meta_prompt_two"] if "meta_prompt_two" in state else None
                 )
                 updated_fields = {
                     "conversationState": "user_input", 
@@ -59,9 +78,6 @@ async def run_construct(inputs: dict, websocket: WebSocket, data: str, thread: d
                     "analyserDecision": state["analyser_decision"] if "analyser_decision" in state else None,
                     "conversationName": state["conversation_name"] if "conversation_name" in state else None,
                     "subject": state["subject"] if "subject" in state else None,
-                    "plan": state["plan"] if "plan" in state else None,
-                    "metaPromptOne": state["meta_prompt_one"] if "meta_prompt_one" in state else None,
-                    "metaPromptTwo": state["meta_prompt_two"] if "meta_prompt_two" in state else None
                 }
                 if update_conv:
                    print("sending updated conversation to web client.")

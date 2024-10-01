@@ -289,6 +289,21 @@ class Database:
             messages = result.scalars().all()
             return [MessageModel(**message.__dict__) for message in messages]
 
+    async def get_meta_agents(self, conversation_id: int) -> List[MetaAgentModel]:
+        """
+        Retrieve all meta agents for a specific conversation.
+
+        Args:
+            conversation_id (int): The ID of the conversation.
+
+        Returns:
+            List[MetaAgentModel]: A list of meta agents for the specified conversation.
+        """
+        async with self.session() as session:
+            result = await session.execute(select(MetaAgent).where(MetaAgent.conversation_id == conversation_id))
+            meta_agents = result.scalars().all()
+            return [MetaAgentModel(**meta_agent.__dict__) for meta_agent in meta_agents]
+
     async def delete_all_conversations(self):
         """Delete all conversations from the database."""
         async with self.session() as session:

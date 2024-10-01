@@ -17,7 +17,7 @@ router = APIRouter()
 construct_thread = {"configurable": {"thread_id": "1"}}
 meta_thread = {"configurable": {"thread_id": "2"}}
 construct_memory = MemorySaver()
-main_graph = constructflow.compile(checkpointer=construct_memory, interrupt_before=["human_node", "meta_graph_node"])
+main_graph = constructflow.compile(checkpointer=construct_memory, interrupt_after=["human_node"])
 
 async def handle_user_input(websocket: WebSocket):
     """
@@ -99,17 +99,25 @@ async def websocket_endpoint(websocket: WebSocket):
                 print("--State after update--")
                 print(main_graph.get_state(construct_thread))
                 
-                # Create tasks
+                # Create the construct_task
                 construct_task = asyncio.create_task(run_construct(None, websocket, data, construct_thread))
                 
-                # Wait for the first task to complete
-                print("###Waiting for construct task to complete###")
-                done, pending = await asyncio.wait([construct_task], return_when=asyncio.FIRST_COMPLETED)
-                
-                print("Running meta task")
-                # Run the second task
-                # meta_task = asyncio.create_task(run_meta_graph(json_message["conversation_id"], websocket, data, meta_thread)) 
-                #await meta_task
+                # Loop to ensure construct_task completes before running meta_task
+                while True:
+                    done, pending = await asyncio.wait(
+                        [construct_task],
+                        timeout=10,
+                        return_when=asyncio.FIRST_COMPLETED
+                    )
+                    
+                    if pending:
+                        print("[WebSocket] construct_task is still pending, waiting 10 seconds...")
+                        await asyncio.sleep(10)
+                    if done:
+                        print("[WebSocket] construct_task completed, running meta_task")
+                        meta_task = asyncio.create_task(run_meta_graph(json_message["conversation_id"], websocket, data, meta_thread))
+                        await meta_task
+                        break  # Exit the loop after meta_task completes
 
             elif json_message["type"] == "get_latest_conversation":
                 print("[WebSocket] Handling get_latest_conversation")

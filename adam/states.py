@@ -39,8 +39,4 @@ class Meta_State(TypedDict):
     agents can work as a team when solving problems.
     """
     meta_messages: Annotated[list[AnyMessage], add_messages] # List of messages for meta-agents
-    plan: str # Plan for the meta-agents
-    meta_prompt_one: str # System prompt for meta_one
-    meta_prompt_two: str # System prompt for meta_two
-    meta_supervisor_decision: str # Decision of the meta_supervisor agent
-    subject: str # Subject of the conversation
+    meta_agents: list[dict] # List of meta-agents in the conversation

@@ -15,25 +15,22 @@ async def run_meta_graph(conversation_id: int, websocket: WebSocket, data: str, 
     # from adam.run_construct import updated_fields
     
     conversation = await db.get_conversation(conversation_id)
-    
+    meta_agent_models = await db.get_meta_agents(conversation_id)
+    meta_agents = [meta_agent.dict() for meta_agent in meta_agent_models]
+
     if conversation is None:
         print(f"Conversation with id {conversation_id} not found")
         return
 
-    plan = conversation.plan
     start_meta_messages = conversation.rewritten_prompt
-    meta_prompt_one = conversation.meta_prompt_one
-    meta_prompt_two = conversation.meta_prompt_two
     subject = conversation.subject
 
-    meta_graph = build_metaflow(plan)
+    meta_graph = build_metaflow(meta_agents)
 
     inputs = {
         "meta_messages": [HumanMessage(content=start_meta_messages, name="human")], 
-        "plan": plan, 
-        "meta_prompt_one": meta_prompt_one, 
-        "meta_prompt_two": meta_prompt_two,
-        "subject": subject
+        "subject": subject,
+        "meta_agents": meta_agents
     }
 
     async for output in meta_graph.astream(inputs, thread, stream_mode="updates"):

@@ -8,10 +8,10 @@ intent.
 import asyncio
 from langchain_core.messages import HumanMessage
 
-async def human_node(state: dict) -> dict:
+async def meta_human_node(state: dict) -> dict:
     print("###Human Node###\n")
 
     message_to_human = HumanMessage(content="placeholder to human", name="AdAM")
 
-    state["messages"].append(message_to_human)
+    state["meta_messages"].append(message_to_human)
     return state

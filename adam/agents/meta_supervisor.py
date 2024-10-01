@@ -11,40 +11,43 @@ sys.path.insert(1, PROJECT_DIRECTORY)  # Include project directory in the system
 
 from pydantic import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_cohere import ChatCohere
+from langchain_openai import ChatOpenAI
+from typing import Literal
 
-# LangChain's BaseModel and Field are derived from pydantic's BaseModel class and Field attribute and can be used to
-# enforce structure in an LLM's responses. Here we are using them to ensure that the LLM only responds in one of two
-# ways. This can be extremely useful in flow engineering as it allows us to route the flow to the correct node
-# without having to worry about variances in the LLM's responses.
-class MetaSupervisorResponse(BaseModel):
-    """Data model for analysing the meta conversation."""
-    next_action: str = Field(description="The next action to be taken: 'Stop' or 'Continue'")
 
-async def meta_supervisor():
+async def meta_supervisor(agent_list):
     """
     Meta Supervisor
     """
-    meta_supervisor_preamble = (
-        "You are the Supervisor for a team of two agents that are experts in {subject}. Your job is to decide whether to keep iterating "
-        " on the prompt or to stop. You are to only ever respond with 'Stop' or 'Continue': \n"
-        " - 'Stop': The feedback is complete and the response is satisfactory and answers the human's query in a truthful manner. \n"
-        " - 'Continue': The response is not satisfactory and/or there is feedback that needs to be included. \n"
+    class RouteResponse(BaseModel):
+        """List of possible agents that the meta supervisor can route to next."""
+        next: Literal[*agent_list]
+
+
+    system_prompt = (
+        "Your are an Agentic Maestro. A conductor of AI agents and always know which of the agents"
+        " in your team is best placed to respond next. If you are not sure, you ask the user to respond."
+        " The agents you can choose from are {{name: role}}: {agent_roster}"
     )
 
     # Initialize the language model with zero randomness for consistent outputs
-    llm = ChatCohere(model="command-r-plus", temperature=0)
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.4)
 
     # Structure the LLM's response using the AnalyserResponse model
-    structured_llm = llm.with_structured_output(MetaSupervisorResponse, preamble=meta_supervisor_preamble)
+    structured_llm = llm.with_structured_output(RouteResponse)
 
     meta_supervisor_prompt = ChatPromptTemplate.from_messages(
         [
             (
                 "system",
-                meta_supervisor_preamble,
+                system_prompt,
             ),
             MessagesPlaceholder(variable_name="meta_messages"),
+            (
+                "system",
+                "Given the conversation above, who should act next?"
+                " Or should we ask the user to respond? Select one of: {agent_list}",
+            ),
         ]
     )
 

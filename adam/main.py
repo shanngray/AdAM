@@ -14,7 +14,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 load_dotenv(override=True)
 
-from adam.server import db, router, manager, handle_user_input
+from adam.server import db, router, manager
 import tracemalloc
 
 tracemalloc.start()

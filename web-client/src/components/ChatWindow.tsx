@@ -116,7 +116,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
   // Handler for sending messages
   const handleMessageSent = useCallback((message: string) => {
-    if (!localConversation || !ws) return
+    if (!localConversation || !ws) return;
 
     const newMessage: Message = {
       id: Date.now(),
@@ -124,23 +124,25 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       message: message,
       type: 'text',
       timestamp: new Date().toISOString()
-    }
+    };
 
-    setMessages(prevMessages => [...prevMessages, newMessage])
+    setMessages(prevMessages => [...prevMessages, newMessage]);
 
+    let messageType: string;
     if (localConversation.conversationState === 'new') {
-      ws.send(JSON.stringify({
-        type: 'create_conversation',
-        message: message
-      }))
+      messageType = 'create_conversation';
+    } else if (localConversation.conversationState === 'meta_agent_input') {
+      messageType = 'meta_agent_input';
     } else {
-      ws.send(JSON.stringify({
-        type: localConversation.conversationState,
-        conversation_id: localConversation.conversationId,
-        content: message,
-        sender_name: 'User'
-      }))
+      messageType = localConversation.conversationState;
     }
+
+    ws.send(JSON.stringify({
+      type: messageType,
+      conversation_id: localConversation.conversationId,
+      content: message,
+      sender_name: 'User'
+    }));
   }, [ws, localConversation]);
 
   // Scroll to bottom when messages change

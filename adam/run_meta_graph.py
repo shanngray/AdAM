@@ -43,7 +43,7 @@ async def run_meta_graph(conversation_id: int, websocket: WebSocket, data: str, 
                     "message": meta_state['meta_messages'][-1].content,
                     "sender_name": meta_state['meta_messages'][-1].name,
                     "type": "new_message",  # client-side type
-                    "conversation_state": "user_input"
+                    "conversation_state": "meta_agent_input"
                 }), websocket)
                 node_message = MessageModel(
                     conversation_id=conversation_id,

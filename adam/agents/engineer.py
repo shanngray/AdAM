@@ -10,17 +10,22 @@ async def engineer(state: dict):
     system_prompt = (
         "# ROLE:\nYou are an expert prompt engineer. \n\n"
         "# TASK:\nRewrite the provided user prompt into clear and concise instructions for "
-        "an LLM to follow using Prompt Enginnering best practices. The instructions should be in a "
-        "step-by-step format. Make sure to include all details from the original prompt and "
-        "importantly don't make anything up.\n\n"
+        "a team of LLM agents to have a conversation. Use Prompt Enginnering best practices. "
+        "The instructions should be in a step-by-step format. Make sure to include all details "
+        "from the original prompt and importantly don't make anything up.\n\n"
         "# EXAMPLE:\n"
         "## Input: I need help writing a user story for creating and modifying process maps.\n"
-        "## Output: Compose a user story for a software feature that allows users to design, "
+        "## Output: Explain the purpose of user stories and the different components. "
+        "Ask the user clarifying questions to ensure you understand their requirements. "
+        "Once you have a clear understanding of the user's requirements, provide a step-by-step "
+        "guide on how to create a user story for the software feature that allows users to design, "
         "update, and save process maps, including the ability to add, remove, or modify process "
         "steps and flow directions.\n\n"
         "# NOTES:\n"
         " - The goal is not to answer the user's prompt but to provide clear instructions in the form "
-        "of an LLM prompt."
+        "of an LLM prompt.\n"
+        " - Make sure your replies are short and that the user is involved in the conversation."
+        " - Your reply should be no more than 3 to 4 sentences long."
     )
     llm = ChatCohere(model="command-r-plus", temperature=0.2)
     

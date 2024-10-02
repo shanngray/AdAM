@@ -29,6 +29,7 @@ from nodes.meta_node_helper import meta_node_helper
 from edges.supervisor_edge import supervisor_edge
 from edges.human_edge import human_edge
 
+from utilities.sanitize_name import sanitize_name
 
 def build_metaflow(meta_agents):
     
@@ -45,12 +46,14 @@ def build_metaflow(meta_agents):
     for num, meta_agent in enumerate(meta_agents):
         meta_agents_dict[num] = meta_agent_helper(meta_agent)
         meta_nodes_dict[num] = functools.partial(meta_node_helper, agent=meta_agents_dict[num], name=meta_agent["name"])
-        metaflow.add_node(f"meta_node_{meta_agent['name']}", meta_nodes_dict[num])
-        metaflow.add_edge(f"meta_node_{meta_agent['name']}", "meta_node_supervisor")
+        metaflow.add_node(f"meta_node_{sanitize_name(meta_agent['name'])}", meta_nodes_dict[num])
+        metaflow.add_edge(f"meta_node_{sanitize_name(meta_agent['name'])}", "meta_node_supervisor")
 
-    conditional_edges = {meta_agent['name']: f"meta_node_{meta_agent['name']}" for meta_agent in meta_agents}
+    conditional_edges = {sanitize_name(meta_agent['name']): f"meta_node_{sanitize_name(meta_agent['name'])}" for meta_agent in meta_agents}
     conditional_edges["user"] = "meta_human_node"
     conditional_edges["meta_search"] = "meta_node_search"
+
+    print(f"### Conditional edges: {conditional_edges}\n\n\n\n\n")
 
     metaflow.add_conditional_edges(
         "meta_node_supervisor", 

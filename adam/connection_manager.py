@@ -33,7 +33,7 @@ class ConnectionManager:
         if websocket.application_state == WebSocketState.CONNECTED:
             try:
                 await websocket.send_text(message)
-                print(f"[ConnectionManager] Sent message to {websocket}: {message}")
+                print(f"[ConnectionManager] Sent message to {websocket}: {message[:50]}...")
             except RuntimeError as e:
                 print(f"RuntimeError while sending message: {e}")
         else:

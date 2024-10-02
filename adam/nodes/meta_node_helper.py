@@ -8,7 +8,7 @@ def meta_node_helper(state, agent, name):
 
     result = meta_chain.invoke({"messages": messages})
 
-    print(f"{name} says: {result}")
+    print(f"{name} says: {result[50]}...")
 
     state["meta_messages"].append(HumanMessage(content=result, name=name))
     return state

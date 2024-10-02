@@ -1,17 +1,22 @@
 """
-This is a special node that doesn't contain an AI agent; instead, it houses a function to
-receive input from the human. This is the second node in the graph, and its purpose is to get
-feedback from the human and ensure that the re-engineered prompt is on track. It serves a
-similar purpose to active listening and makes sure that the AI agent understood the human's
-intent.
+Node for agent that sends a short question to the human
 """
 import asyncio
 from langchain_core.messages import HumanMessage
+from agents.questioner import questioner
 
 async def meta_human_node(state: dict) -> dict:
-    print("###Human Node###\n")
+    print("###Meta Human Node###\n")
 
-    message_to_human = HumanMessage(content="placeholder to human", name="AdAM")
+    messages = state["meta_messages"]
 
-    state["meta_messages"].append(message_to_human)
+    questioner_chain = await questioner()
+
+    question = await questioner_chain.ainvoke({"messages": messages})
+
+    print(f"Question to Human: {question}")
+
+    question_to_human = HumanMessage(content=question, name="AdAM")
+
+    state["meta_messages"].append(question_to_human)
     return state

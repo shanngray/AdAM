@@ -14,14 +14,14 @@ async def agent_builder():
         "# TASK:\nWrite the system prompt for an agent that is a subject matter expert in {subject}.\n\n"
         "# NOTES:\n"
         " - The system prompt should use advanced prompt engineering techniques.\n"
-        " - The *task* will be passed to the Agent separately.\n"
-        " - Be concise and specific.\n"
+        " - The agent should be advised torespond succintly and to the point.\n"
+        " - Be concise and specific when creating the system prompt.\n"
         " - Only return the system prompt and nothing else.\n"
         " - Incorporate the agent's blueprint into the system prompt: \n"
         "{agent_blueprint}"
     )
 
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2)
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.4)
     
     # The ChatPromptTemplate class in LangChain is used to create and format prompts for 
     # conversational models. It provides a structured way to define the messages that will be sent

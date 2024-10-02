@@ -3,8 +3,8 @@ Meta Supervisor Node
 """
 import sys
 import os
-import re
 from dotenv import load_dotenv
+from utilities.sanitize_name import sanitize_name
 
 # Load environment variables from .env file
 load_dotenv(".env")
@@ -14,11 +14,6 @@ PROJECT_DIRECTORY = os.getenv("PROJECT_DIRECTORY")
 
 # Insert the project directory into the system path for module resolution
 sys.path.insert(1, PROJECT_DIRECTORY)
-
-#TODO: pull out sanitize name to a utils file and santize the names as they are created
-def sanitize_name(name):
-    """Sanitize the name to comply with OpenAI's API requirements."""
-    return re.sub(r'[^a-zA-Z0-9_-]', '_', name)
 
 from langchain_core.messages import HumanMessage
 from agents.meta_supervisor import meta_supervisor

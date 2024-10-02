@@ -90,12 +90,18 @@ const ConversationList: React.FC<ConversationListProps> = ({
       rewrittenPrompt: '',
     };
 
-    ws.send(
-      JSON.stringify({
-        type: 'create_conversation',
-        ...placeholderConversation,
-      })
-    );
+    // Check if the WebSocket is open before sending
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(
+        JSON.stringify({
+          type: 'create_conversation',
+          ...placeholderConversation,
+        })
+      );
+    } else {
+      console.warn('WebSocket is not open. Current state:', ws.readyState);
+      // Optionally, you can implement a retry mechanism or queue the message
+    }
   };
 
   return (

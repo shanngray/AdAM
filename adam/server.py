@@ -18,7 +18,7 @@ construct_thread = {"configurable": {"thread_id": "1"}}
 meta_thread = {"configurable": {"thread_id": "2"}}
 construct_memory = MemorySaver()
 main_graph = constructflow.compile(checkpointer=construct_memory, interrupt_after=["human_node"])
-
+'''
 async def handle_user_input(websocket: WebSocket):
     """
     Handles user input for a specific WebSocket connection.
@@ -49,7 +49,7 @@ async def process_human_node(state: Dict[str, any]):
     # This depends on the overall workflow architecture
     print(f"[process_human_node] Updated state from human_node: {updated_state}")
     # Placeholder for next steps
-
+'''
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
@@ -118,6 +118,26 @@ async def websocket_endpoint(websocket: WebSocket):
                         meta_task = asyncio.create_task(run_meta_graph(json_message["conversation_id"], websocket, data, meta_thread))
                         await meta_task
                         break  # Exit the loop after meta_task completes
+
+            elif json_message["type"] == "meta_agent_input":
+                print(f"[WebSocket] Handling meta_agent_input: {json_message['content']}")
+                db_message = MessageModel(
+                    conversation_id=json_message["conversation_id"],
+                    message=json_message["content"],
+                    sender_name=json_message["sender_name"],
+                    type="inner"
+                )
+                new_msg = await db.add_message(db_message)
+                human_msg = HumanMessage(content=json_message["content"], name="human")
+                print("--Meta State before update--")
+                print(main_graph.get_state(meta_thread))
+                main_graph.update_state(meta_thread, {"messages": [human_msg]}, as_node="human_node")
+                print("--Meta State after update--")
+                print(main_graph.get_state(meta_thread))
+                
+                # Create the construct_task
+                meta_task = asyncio.create_task(run_meta_graph(None, websocket, data, meta_thread))
+                await meta_task
 
             elif json_message["type"] == "get_latest_conversation":
                 print("[WebSocket] Handling get_latest_conversation")

@@ -1,5 +1,7 @@
 import React, { useContext } from 'react';
 import { MetaAgentsContext, MetaAgent } from './MetaAgentsContext';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import Image from 'next/image'; // Add this import if you're using Next.js
 
 interface SecondaryWindowProps {
@@ -18,17 +20,17 @@ const SecondaryWindow: React.FC<SecondaryWindowProps> = ({ conversation }) => {
             <div className="card-body">
               <h3 className="card-title">Conversation Details</h3>
               <p><strong>Name:</strong> {conversation.conversationName}</p>
-              <p><strong>Subject:</strong> {conversation.subject}</p>
+              <p><strong>Subject:</strong> <ReactMarkdown remarkPlugins={[remarkGfm]}>{conversation.subject}</ReactMarkdown></p>
               <p><strong>State:</strong> {conversation.conversationState}</p>
-              <p><strong>Rewritten Prompt:</strong> {conversation.rewrittenPrompt}</p>
+              <p><strong>Rewritten Prompt:</strong> <ReactMarkdown remarkPlugins={[remarkGfm]}>{conversation.rewrittenPrompt}</ReactMarkdown></p>
             </div>
           </div>
           {metaAgents.length > 0 && (
-            <div className="card bg-base-200 shadow-xl">
-              <div className="card-body">
-                <h3 className="card-title">Meta Agents</h3>
-                {metaAgents.map((agent: MetaAgent) => (
-                  <div key={agent.id} className="mb-4">
+            <div className="space-y-4">
+              {metaAgents.map((agent: MetaAgent) => (
+                <div key={agent.id} className="card bg-base-200 shadow-xl">
+                  <div className="card-body">
+                    <h3 className="card-title">{agent.name}</h3>
                     {agent.url && (
                       <div className="w-full aspect-square relative mb-2">
                         <Image
@@ -40,16 +42,14 @@ const SecondaryWindow: React.FC<SecondaryWindowProps> = ({ conversation }) => {
                         />
                       </div>
                     )}
-                    <p><strong>Name:</strong> {agent.name}</p>
-                    <p><strong>Personality:</strong> {agent.personality}</p>
+                    <p><strong>Personality:</strong> <ReactMarkdown remarkPlugins={[remarkGfm]}>{agent.personality}</ReactMarkdown></p>
                     <p><strong>Temperament:</strong> {agent.temperament}</p>
                     <p><strong>Temperature:</strong> {agent.temperature}</p>
                     <p><strong>Role:</strong> {agent.role}</p>
-                    <p><strong>System Prompt:</strong> {agent.system_prompt}</p>
-                    <hr className="my-2" />
+                    <p><strong>System Prompt:</strong> <ReactMarkdown remarkPlugins={[remarkGfm]}>{agent.system_prompt}</ReactMarkdown></p>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           )}
         </div>

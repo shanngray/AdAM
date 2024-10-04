@@ -41,6 +41,23 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     }
   }, [conversation])
 
+  const getConversationHistory = useCallback(() => {
+    if (ws && localConversation && ws.readyState === WebSocket.OPEN) {
+      const message = JSON.stringify({
+        type: 'get_conversation_history',
+        conversation_id: localConversation.conversationId
+      })
+      console.log("ChatWindow: Requesting conversation history")
+      ws.send(message)
+    }
+  }, [ws, localConversation])
+
+  useEffect(() => {
+    if (localConversation) {
+      getConversationHistory()
+    }
+  }, [localConversation, getConversationHistory])
+
   // Set up WebSocket event listener and request conversation history
   useEffect(() => {
     console.log("ChatWindow: Setting up WebSocket listener")
@@ -93,19 +110,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       };
 
       ws.addEventListener('message', handleMessage)
-
-      // Request conversation history from the server
-      // TODO: This only needs to be called when a new conversation is selected
-      const getConversationHistory = () => {
-        const message = JSON.stringify({
-          type: 'get_conversation_history',
-          conversation_id: localConversation.conversationId
-        })
-        console.log("ChatWindow: Requesting conversation history")
-        ws.send(message)
-      }
-
-      getConversationHistory()
 
       // Clean up event listener when component unmounts or dependencies change
       return () => {

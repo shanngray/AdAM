@@ -12,7 +12,7 @@ async def artist_node(state):
     Adds a portrait URL to the latest agent blueprint in the state.
     """
     print("### Artist Node ###\n")
-    print(f"State at artist node: {state}")
+    #print(f"State at artist node: {state}")
     
     # Generate the portrait URL using the artist function
     portrait_url = await artist(state["agent_blueprints"][-1])

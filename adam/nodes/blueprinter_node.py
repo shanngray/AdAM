@@ -22,7 +22,7 @@ async def blueprinter_node(state):
     """
     """
     print("###Blueprinter Node###\n")
-    print(f"state at blueprinter node: {state}")
+    #print(f"state at blueprinter node: {state}")
     blueprinter_chain = await blueprinter()
 
     rewritten_prompt = state["rewritten_prompt"]

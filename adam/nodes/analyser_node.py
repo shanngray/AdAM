@@ -22,7 +22,7 @@ async def analyser_node(state):
     """
     """
     print("###Analyser Node###\n")
-    print(f"state at analyser node: {state}")
+    #print(f"state at analyser node: {state}")
     human_response = state["messages"][-1]
     ic(human_response)
     analyser_chain = await analyser(state)

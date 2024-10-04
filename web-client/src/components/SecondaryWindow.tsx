@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { MetaAgentsContext, MetaAgent } from './MetaAgentsContext';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import Image from 'next/image'; // Add this import if you're using Next.js
+import Image from 'next/image'; // Ensure this import is correct
 
 interface SecondaryWindowProps {
   conversation: Conversation | null;
@@ -15,7 +15,7 @@ const SecondaryWindow: React.FC<SecondaryWindowProps> = ({ conversation }) => {
     <div className="w-full h-[93vh] bg-base-100 p-4 border-l border-base-300 flex flex-col overflow-hidden">
       <h2 className="text-2xl font-bold mb-4">Secondary Window</h2>
       {conversation ? (
-        <div className="space-y-4 flex-grow overflow-y-auto">
+        <div key={conversation.conversationId} className="space-y-4 flex-grow overflow-y-auto">
           <div className="card bg-base-200 shadow-xl">
             <div className="card-body">
               <h3 className="card-title">Conversation Details</h3>
@@ -36,9 +36,9 @@ const SecondaryWindow: React.FC<SecondaryWindowProps> = ({ conversation }) => {
                         <Image
                           src={`/agent_portraits/${agent.url}`}
                           alt={`Portrait of ${agent.name}`}
-                          layout="fill"
-                          objectFit="contain"
-                          className="rounded-lg"
+                          fill
+                          className="object-contain rounded-lg"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
                       </div>
                     )}

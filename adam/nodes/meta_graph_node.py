@@ -24,6 +24,6 @@ async def meta_graph_node(state):
 
     adam_message = HumanMessage(content="Starting meta analysis...", name="AdAM")
 
-    state.messages.append(adam_message)
+    state["messages"].append(adam_message)
 
     return state
